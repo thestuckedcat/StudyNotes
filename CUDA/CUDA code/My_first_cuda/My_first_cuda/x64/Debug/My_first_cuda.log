@@ -1,0 +1,19 @@
+﻿  Compiling CUDA source file v0.cu...
+  Compiling CUDA source file reduce_operator.cu...
+  
+  D:\Daily Leetcode\CUDA\CUDA code\My_first_cuda\My_first_cuda>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\bin\HostX64\x64" -x cu   -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\include"  -G   --keep-dir x64\Debug  -maxrregcount=0   --machine 64 --compile -cudart static  -g  -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -Xcompiler "/Fdx64\Debug\vc143.pdb" -o "D:\Daily Leetcode\CUDA\CUDA code\My_first_cuda\My_first_cuda\x64\Debug\v0.cu.obj" "D:\Daily Leetcode\CUDA\CUDA code\My_first_cuda\My_first_cuda\v0.cu" 
+  
+  D:\Daily Leetcode\CUDA\CUDA code\My_first_cuda\My_first_cuda>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\bin\HostX64\x64" -x cu   -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\include"  -G   --keep-dir x64\Debug  -maxrregcount=0   --machine 64 --compile -cudart static  -g  -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -Xcompiler "/Fdx64\Debug\vc143.pdb" -o "D:\Daily Leetcode\CUDA\CUDA code\My_first_cuda\My_first_cuda\x64\Debug\reduce_operator.cu.obj" "D:\Daily Leetcode\CUDA\CUDA code\My_first_cuda\My_first_cuda\reduce_operator.cu" 
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\include\cuda.h(20648): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\include\cuda.h(21324): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  v0.cu
+  tmpxft_0000967c_00000000-7_v0.cudafe1.cpp
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\include\cuda.h(20648): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\include\cuda.h(21324): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  reduce_operator.cu
+  tmpxft_00009588_00000000-7_reduce_operator.cudafe1.cpp
+D:\Daily Leetcode\CUDA\CUDA code\My_first_cuda\My_first_cuda\reduce_operator.cu(132): warning C4477: “printf”: 格式字符串“%lf”需要类型“double”的参数，但可变参数 1 拥有了类型“int”
+D:\Daily Leetcode\CUDA\CUDA code\My_first_cuda\My_first_cuda\reduce_operator.cu(135): warning C4477: “printf”: 格式字符串“%f”需要类型“double”的参数，但可变参数 1 拥有了类型“int”
+    正在创建库 D:\Daily Leetcode\CUDA\CUDA code\My_first_cuda\x64\Debug\My_first_cuda.lib 和对象 D:\Daily Leetcode\CUDA\CUDA code\My_first_cuda\x64\Debug\My_first_cuda.exp
+LINK : warning LNK4098: 默认库“LIBCMT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
+  My_first_cuda.vcxproj -> D:\Daily Leetcode\CUDA\CUDA code\My_first_cuda\x64\Debug\My_first_cuda.exe

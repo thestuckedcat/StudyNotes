@@ -1,0 +1,1 @@
+D:\Daily Leetcode\c++\Section15_Inheritance\x64\Debug\Section15_Inheritance.exe

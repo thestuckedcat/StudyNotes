@@ -79,5 +79,7 @@ namespace ship_example {
 			threadadd.join();
 			//show_time();
 		}
+
+		
 	}
 }

@@ -1,0 +1,6 @@
+﻿  main.cpp
+D:\Github-storage\StudyNotes\c++\Parallism\call_thread_guard.h(20,17): warning C4227: 使用了记时错误: 忽略引用上的限定符
+D:\Github-storage\StudyNotes\c++\Parallism\call_thread_guard.h(21,49): warning C4227: 使用了记时错误: 忽略引用上的限定符
+D:\Github-storage\StudyNotes\c++\Parallism\transferring_thread_ownership.h(9,10): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“std::thread::id”
+D:\Github-storage\StudyNotes\c++\Parallism\transferring_thread_ownership.h(14,10): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“std::thread::id”
+  Parallism.vcxproj -> D:\Github-storage\StudyNotes\c++\Parallism\x64\Debug\Parallism.exe

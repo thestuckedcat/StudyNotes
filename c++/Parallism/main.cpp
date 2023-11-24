@@ -6,6 +6,8 @@
 # include "ship_example.h"
 # include "pass_parameters.h"
 # include "transferring_thread_ownership.h"
+# include "useful_functions_in_thread.h"
+# include "ship_example2.h"
 
 int main() {
 	//launch_a_thread::run();
@@ -23,7 +25,9 @@ int main() {
 	//pass_parameters::run_1();
 	//pass_parameters::run_2();
 
-	transfer_ownership::run();
+	//transfer_ownership::run();
 
+	//useful_functions::run();
 
+	ship_example_with_queue::captain();
 }

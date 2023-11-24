@@ -4,4 +4,4 @@
 *.ptx
 *.cubin
 *.fatbin
-*.iphc
+*.ipch

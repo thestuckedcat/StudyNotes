@@ -8,6 +8,7 @@
 # include "transferring_thread_ownership.h"
 # include "useful_functions_in_thread.h"
 # include "ship_example2.h"
+# include "parallel_accumulation.h"
 
 int main() {
 	//launch_a_thread::run();
@@ -29,5 +30,7 @@ int main() {
 
 	//useful_functions::run();
 
-	ship_example_with_queue::captain();
+	//ship_example_with_queue::captain();
+
+	parallel_accumulation::run();
 }

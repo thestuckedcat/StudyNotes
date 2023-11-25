@@ -132,6 +132,7 @@
     <ClInclude Include="exception_scenario_join.h" />
     <ClInclude Include="join_joinable_detach.h" />
     <ClInclude Include="launch_a_thread.h" />
+    <ClInclude Include="parallel_accumulation.h" />
     <ClInclude Include="pass_parameters.h" />
     <ClInclude Include="ship_example.h" />
     <ClInclude Include="ship_example2.h" />

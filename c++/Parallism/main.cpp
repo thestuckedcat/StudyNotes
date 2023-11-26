@@ -9,6 +9,8 @@
 # include "useful_functions_in_thread.h"
 # include "ship_example2.h"
 # include "parallel_accumulation.h"
+# include "thread_local_storage.h"
+# include "Using_mutex.h"
 
 int main() {
 	//launch_a_thread::run();
@@ -32,5 +34,9 @@ int main() {
 
 	//ship_example_with_queue::captain();
 
-	parallel_accumulation::run();
+	//parallel_accumulation::run();
+
+	//thread_local_storage::run();
+
+	using_mutex::run();
 }

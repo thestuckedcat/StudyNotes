@@ -45,6 +45,18 @@
     <ClInclude Include="parallel_accumulation.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="thread_local_storage.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Using_mutex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="what_can_go_wrong_with_mutex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_safe_stack.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

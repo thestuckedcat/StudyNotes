@@ -11,6 +11,9 @@
 # include "parallel_accumulation.h"
 # include "thread_local_storage.h"
 # include "Using_mutex.h"
+# include "dead_lock.h"
+# include "unique_locks.h"
+# include "Drive_example.h"
 
 int main() {
 	//launch_a_thread::run();
@@ -38,5 +41,15 @@ int main() {
 
 	//thread_local_storage::run();
 
-	using_mutex::run();
+	//using_mutex::run();
+
+	//dead_lock_example::run_1();
+	//dead_lock_example::run_2();
+
+	//unique_lock_example::run_1();
+	//unique_lock_example::run_2();
+
+
+	drive_example::run_2();
+
 }

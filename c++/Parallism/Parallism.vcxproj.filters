@@ -57,6 +57,15 @@
     <ClInclude Include="thread_safe_stack.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="dead_lock.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="unique_locks.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Drive_example.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

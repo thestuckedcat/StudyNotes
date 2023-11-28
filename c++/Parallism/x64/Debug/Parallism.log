@@ -23,4 +23,11 @@ D:\Github-storage\StudyNotes\c++\Parallism\parallel_accumulation.h(86,17): messa
               T=int,
               iterator=int *
           ]
+D:\Github-storage\StudyNotes\c++\Parallism\accumulate_with_async.h(13,15): warning C4244: “初始化”: 从“__int64”转换到“long”，可能丢失数据
+D:\Github-storage\StudyNotes\c++\Parallism\accumulate_with_async.h(32,33): message : 查看对正在编译的函数 模板 实例化“int accumulate_with_async::parallel_accumulate<std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>>(iterator,iterator)”的引用
+          with
+          [
+              _Ty=int,
+              iterator=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<int>>>
+          ]
   Parallism.vcxproj -> D:\Github-storage\StudyNotes\c++\Parallism\x64\Debug\Parallism.exe

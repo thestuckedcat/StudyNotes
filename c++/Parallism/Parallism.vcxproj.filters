@@ -66,6 +66,24 @@
     <ClInclude Include="Drive_example.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="thread_safe_queue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="future_asynchronous.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="deep_dive_in_async.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="accumulate_with_async.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="package_task_example.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="promise_future_example.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

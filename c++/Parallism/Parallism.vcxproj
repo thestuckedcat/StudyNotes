@@ -128,17 +128,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="accumulate_with_async.h" />
     <ClInclude Include="call_thread_guard.h" />
     <ClInclude Include="dead_lock.h" />
+    <ClInclude Include="deep_dive_in_async.h" />
     <ClInclude Include="Drive_example.h" />
     <ClInclude Include="exception_scenario_join.h" />
+    <ClInclude Include="future_asynchronous.h" />
     <ClInclude Include="join_joinable_detach.h" />
     <ClInclude Include="launch_a_thread.h" />
+    <ClInclude Include="package_task_example.h" />
     <ClInclude Include="parallel_accumulation.h" />
     <ClInclude Include="pass_parameters.h" />
+    <ClInclude Include="promise_future_example.h" />
     <ClInclude Include="ship_example.h" />
     <ClInclude Include="ship_example2.h" />
     <ClInclude Include="thread_local_storage.h" />
+    <ClInclude Include="thread_safe_queue.h" />
     <ClInclude Include="thread_safe_stack.h" />
     <ClInclude Include="transferring_thread_ownership.h" />
     <ClInclude Include="unique_locks.h" />

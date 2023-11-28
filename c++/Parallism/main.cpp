@@ -14,6 +14,16 @@
 # include "dead_lock.h"
 # include "unique_locks.h"
 # include "Drive_example.h"
+# include "thread_safe_queue.h"
+# include "future_asynchronous.h"
+# include "deep_dive_in_async.h"
+# include "accumulate_with_async.h"
+# include "package_task_example.h"
+# include "promise_future_example.h"
+
+
+
+
 
 int main() {
 	//launch_a_thread::run();
@@ -50,6 +60,19 @@ int main() {
 	//unique_lock_example::run_2();
 
 
-	drive_example::run_2();
+	//drive_example::run_2();
+
+	//thread_safe_queue_space::run();
+
+	//future_asynchronous::run();
+
+	//deep_dive_in_async::run();
+
+	//accumulate_with_async::run();
+
+	//package_task_example::run();
+	
+	//promise_future_example::run();
+	promise_future_example::run_with_package();
 
 }

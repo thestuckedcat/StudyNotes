@@ -20,8 +20,8 @@
 # include "accumulate_with_async.h"
 # include "package_task_example.h"
 # include "promise_future_example.h"
-
-
+# include "promise_send_exception.h"
+# include "shared_future_example.h"
 
 
 
@@ -73,6 +73,10 @@ int main() {
 	//package_task_example::run();
 	
 	//promise_future_example::run();
-	promise_future_example::run_with_package();
+	//promise_future_example::run_with_package();
+
+	//promise_send_exception::run();
+
+	shared_future_example::run_2();
 
 }

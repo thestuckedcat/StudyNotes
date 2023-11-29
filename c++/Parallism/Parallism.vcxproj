@@ -141,12 +141,15 @@
     <ClInclude Include="parallel_accumulation.h" />
     <ClInclude Include="pass_parameters.h" />
     <ClInclude Include="promise_future_example.h" />
+    <ClInclude Include="promise_send_exception.h" />
+    <ClInclude Include="shared_future_example.h" />
     <ClInclude Include="ship_example.h" />
     <ClInclude Include="ship_example2.h" />
     <ClInclude Include="thread_local_storage.h" />
     <ClInclude Include="thread_safe_queue.h" />
     <ClInclude Include="thread_safe_stack.h" />
     <ClInclude Include="transferring_thread_ownership.h" />
+    <ClInclude Include="ultimate_parallel_thread_safe_queue.h" />
     <ClInclude Include="unique_locks.h" />
     <ClInclude Include="useful_functions_in_thread.h" />
     <ClInclude Include="Using_mutex.h" />

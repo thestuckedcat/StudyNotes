@@ -84,6 +84,15 @@
     <ClInclude Include="promise_future_example.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="promise_send_exception.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="shared_future_example.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ultimate_parallel_thread_safe_queue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

@@ -21,6 +21,11 @@ D:\Github-storage\StudyNotes\c++\Parallism\promise_send_exception.h(29,28): warn
           [
               _Ty=int
           ]
+D:\Github-storage\StudyNotes\c++\Parallism\Using_Parallel_STL.h(23,10): warning C4477: “printf”: 格式字符串“%lld”需要类型“__int64”的参数，但可变参数 4 拥有了类型“_To”
+          with
+          [
+              _To=std::chrono::milliseconds
+          ]
 D:\Github-storage\StudyNotes\c++\Parallism\parallel_accumulation.h(41,18): warning C4244: “初始化”: 从“__int64”转换到“int”，可能丢失数据
 D:\Github-storage\StudyNotes\c++\Parallism\parallel_accumulation.h(86,17): message : 查看对正在编译的函数 模板 实例化“T parallel_accumulation::parallel_accumulate<int*,int>(iterator,iterator,T &)”的引用
           with

@@ -22,7 +22,7 @@
 # include "promise_future_example.h"
 # include "promise_send_exception.h"
 # include "shared_future_example.h"
-
+# include "Using_Parallel_STL.h"
 
 
 int main() {
@@ -77,6 +77,7 @@ int main() {
 
 	//promise_send_exception::run();
 
-	shared_future_example::run_2();
+	//shared_future_example::run_2();
 
+	using_parallel_stl::run();
 }

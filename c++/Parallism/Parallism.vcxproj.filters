@@ -93,6 +93,9 @@
     <ClInclude Include="ultimate_parallel_thread_safe_queue.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Using_Parallel_STL.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

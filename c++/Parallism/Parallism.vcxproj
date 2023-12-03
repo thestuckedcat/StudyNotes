@@ -153,6 +153,7 @@
     <ClInclude Include="unique_locks.h" />
     <ClInclude Include="useful_functions_in_thread.h" />
     <ClInclude Include="Using_mutex.h" />
+    <ClInclude Include="Using_Parallel_STL.h" />
     <ClInclude Include="what_can_go_wrong_with_mutex.h" />
   </ItemGroup>
   <ItemGroup>

@@ -23,7 +23,7 @@
 # include "promise_send_exception.h"
 # include "shared_future_example.h"
 # include "Using_Parallel_STL.h"
-
+# include "Parallel_quick_sort.h"
 
 int main() {
 	//launch_a_thread::run();
@@ -79,5 +79,8 @@ int main() {
 
 	//shared_future_example::run_2();
 
-	using_parallel_stl::run();
+	//using_parallel_stl::run();
+
+	parallel_quick_sort1::run(20000, 5);
+	
 }

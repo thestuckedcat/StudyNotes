@@ -44,6 +44,8 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <VCToolsVersion>
+    </VCToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -139,6 +141,8 @@
     <ClInclude Include="launch_a_thread.h" />
     <ClInclude Include="package_task_example.h" />
     <ClInclude Include="parallel_accumulation.h" />
+    <ClInclude Include="parallel_for_each.h" />
+    <ClInclude Include="Parallel_quick_sort.h" />
     <ClInclude Include="pass_parameters.h" />
     <ClInclude Include="promise_future_example.h" />
     <ClInclude Include="promise_send_exception.h" />

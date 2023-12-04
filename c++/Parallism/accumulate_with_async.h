@@ -13,7 +13,7 @@ namespace accumulate_with_async {
 		long length = std::distance(begin, end);
 		
 		if (length <= MIN_ELEMENT_COUNT) {
-			std::cout << "子执行线程为" << std::this_thread::get_id() << std::endl;
+			std::cout << "thread id is" << std::this_thread::get_id() << std::endl;
 			return std::accumulate(begin, end, 0);
 		}
 

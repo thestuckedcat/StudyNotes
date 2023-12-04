@@ -96,6 +96,12 @@
     <ClInclude Include="Using_Parallel_STL.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Parallel_quick_sort.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="parallel_for_each.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

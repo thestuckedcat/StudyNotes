@@ -102,6 +102,12 @@
     <ClInclude Include="parallel_for_each.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="parallel_find_example.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="parallel_prefix_sum.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

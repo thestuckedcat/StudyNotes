@@ -24,6 +24,9 @@
 # include "shared_future_example.h"
 # include "Using_Parallel_STL.h"
 # include "Parallel_quick_sort.h"
+# include "parallel_for_each.h"
+# include "parallel_find_example.h"
+# include "parallel_prefix_sum.h"
 
 int main() {
 	//launch_a_thread::run();
@@ -81,6 +84,12 @@ int main() {
 
 	//using_parallel_stl::run();
 
-	parallel_quick_sort1::run(20000, 5);
+	//parallel_quick_sort1::run(20000, 5);
 	
+	//parallel_for_each::run();
+
+	//parallel_find_example::run();
+
+	parallel_prefix_sum::run();
+
 }

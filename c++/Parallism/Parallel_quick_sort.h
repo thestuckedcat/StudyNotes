@@ -44,63 +44,63 @@ namespace parallel_quick_sort1 {
 
 
 	//并行版本
-	//template<typename T>
-	//std::list<T> parallel_quick_sort(std::list<T> input) {
-	//	//std::cout << std::this_thread::get_id() << std::endl;
-	//	if (input.size() < 2) {
-	//		return input;
-	//	}
-	//	//move first element in the list to result list and take it as pivot value
-	//	std::list<T> result;
-	//	result.splice(result.begin(), input, input.begin());
-	//	T pivot = *result.begin();
-
-	//	//partition the input array
-	//	auto divide_point = std::partition(input.begin(), input.end(), [&](T const& t) {return t < pivot; });
-
-	//	//move lower part of the list to separate list so that we can make recursive call
-	//	std::list<T> lower_list;
-	//	lower_list.splice(lower_list.end(), input, input.begin(), divide_point);
-
-	//	auto new_lower(parallel_quick_sort<T>(std::move(lower_list)));
-	//	//apply async to recrusive
-	//	std::future<std::list<T>> new_upper_future(std::async(std::launch::async|std::launch::deferred, &parallel_quick_sort<T>, std::move(input)));
-
-	//	result.splice(result.begin(), new_lower);
-	//	result.splice(result.end(), new_upper_future.get());
-
-	//	return result.
-	//	
-	//}
-	std::list<double> parallel_quick_sort(std::list<double> input) 
-	{
+	template<typename T>
+	std::list<T> parallel_quick_sort(std::list<T> input) {
 		//std::cout << std::this_thread::get_id() << std::endl;
 		if (input.size() < 2) {
 			return input;
 		}
 		//move first element in the list to result list and take it as pivot value
-		std::list<double> result;
+		std::list<T> result;
 		result.splice(result.begin(), input, input.begin());
-		double pivot = *result.begin();
+		T pivot = *result.begin();
 
 		//partition the input array
-		auto divide_point = std::partition(input.begin(), input.end(), [&](double const& t) {return t < pivot; });
+		auto divide_point = std::partition(input.begin(), input.end(), [&](T const& t) {return t < pivot; });
 
 		//move lower part of the list to separate list so that we can make recursive call
-		std::list<double> lower_list;
+		std::list<T> lower_list;
 		lower_list.splice(lower_list.end(), input, input.begin(), divide_point);
 
-		auto new_lower(parallel_quick_sort(std::move(lower_list)));
-		//将其中一个递归函数调用作为async task
-	    std::future<std::list<double>> new_upper_future(std::async(&parallel_quick_sort, std::move(input)));
-
+		auto new_lower(parallel_quick_sort<T>(std::move(lower_list)));
+		//apply async to recrusive
+		std::future<std::list<T>> new_upper_future(std::async(std::launch::async|std::launch::deferred, &parallel_quick_sort<T>, std::move(input)));
 
 		result.splice(result.begin(), new_lower);
 		result.splice(result.end(), new_upper_future.get());
 
 		return result;
-
+		
 	}
+	//std::list<double> parallel_quick_sort(std::list<double> input) 
+	//{
+	//	//std::cout << std::this_thread::get_id() << std::endl;
+	//	if (input.size() < 2) {
+	//		return input;
+	//	}
+	//	//move first element in the list to result list and take it as pivot value
+	//	std::list<double> result;
+	//	result.splice(result.begin(), input, input.begin());
+	//	double pivot = *result.begin();
+
+	//	//partition the input array
+	//	auto divide_point = std::partition(input.begin(), input.end(), [&](double const& t) {return t < pivot; });
+
+	//	//move lower part of the list to separate list so that we can make recursive call
+	//	std::list<double> lower_list;
+	//	lower_list.splice(lower_list.end(), input, input.begin(), divide_point);
+
+	//	auto new_lower(parallel_quick_sort(std::move(lower_list)));
+	//	//将其中一个递归函数调用作为async task
+	//    std::future<std::list<double>> new_upper_future(std::async(&parallel_quick_sort, std::move(input)));
+
+
+	//	result.splice(result.begin(), new_lower);
+	//	result.splice(result.end(), new_upper_future.get());
+
+	//	return result;
+
+	//}
 
 
 	//std::list<double> my_parallel_quick_sort(std::list<double> input)
@@ -170,8 +170,8 @@ namespace parallel_quick_sort1 {
 		{
 			std::list<double> sorted;
 			const std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-			sorted = parallel_quick_sort(doubles);
-			//sorted = parallel_quick_sort<double>(doubles);
+			//sorted = parallel_quick_sort(doubles);
+			sorted = parallel_quick_sort<double>(doubles);
 			const std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
 			print_runtime<double>("Parallel quick sort", sorted, startTime, endTime);
 		}

@@ -62,7 +62,7 @@ namespace parallel_for_each {
 		unsigned long const num_threads = std::min(hardware_threads != 0 ? hardware_threads : 2, max_threads);
 		unsigned long const block_size = length / num_threads;
 
-		/*	Declare the needed data structures	*/
+		/*	Declare the future vector and thread vector	*/
 
 		std::vector<std::future<void>> futures(num_threads - 1);
 		std::vector<std::thread> threads(num_threads - 1);
@@ -71,7 +71,7 @@ namespace parallel_for_each {
 		/*	Partition of data between threads	*/
 
 		Iterator block_start = first;
-		for (unsigned long i = 0; i <= (num_threads - 2); i++)
+		for (unsigned long i = 0; i < (num_threads - 1); i++)
 		{
 			Iterator block_end = block_start;
 			std::advance(block_end, block_size);
@@ -98,7 +98,7 @@ namespace parallel_for_each {
 
 	}
 
-	/* This is the parallel version of for_each function implmentation with std::async */
+	/* This is the parallel version of for_each function implmentation with recursive std::async */
 	template<typename Iterator, typename Func>
 	void parallel_for_each_async(Iterator first, Iterator last, Func f)
 	{
@@ -115,9 +115,10 @@ namespace parallel_for_each {
 		}
 		else
 		{
-			Iterator const mid_point = first + length / 2;
-			std::future<void> first_half =
-				std::async(&parallel_for_each_async<Iterator, Func>, first, mid_point, f);
+			//Iterator const mid_point = first + length / 2;
+			Iterator const mid_point = std::next(first, length / 2);
+
+			std::future<void> first_half = std::async(&parallel_for_each_async<Iterator, Func>, first, mid_point, f);
 
 			parallel_for_each_async(mid_point, last, f);
 			first_half.get();
@@ -136,36 +137,38 @@ namespace parallel_for_each {
 
 		auto long_function = [](const int& n)
 		{
+			/*only calculate sum, no return ,n will not be modified*/
 			int sum = 0;
 			for (auto i = 0; i < 100000; i++)
 			{
+				
 				sum += 1 * (i - 499);
 			}
 		};
 
-		auto startTime = high_resolution_clock::now();
+		auto startTime = std::chrono::high_resolution_clock::now();
 		std::for_each(ints.cbegin(), ints.cend(), long_function);
-		auto endTime = high_resolution_clock::now();
+		auto endTime = std::chrono::high_resolution_clock::now();
 		print_results("STL                   ", startTime, endTime);
 
-		startTime = high_resolution_clock::now();
+		startTime = std::chrono::high_resolution_clock::now();
 		for_each(std::execution::seq, ints.cbegin(), ints.cend(), long_function);
-		endTime = high_resolution_clock::now();
+		endTime = std::chrono::high_resolution_clock::now();
 		print_results("STL-seq               ", startTime, endTime);
 
-		startTime = high_resolution_clock::now();
+		startTime = std::chrono::high_resolution_clock::now();
 		std::for_each(std::execution::par, ints.cbegin(), ints.cend(), long_function);
-		endTime = high_resolution_clock::now();
+		endTime = std::chrono::high_resolution_clock::now();
 		print_results("STL-par               ", startTime, endTime);
 
-		startTime = high_resolution_clock::now();
+		startTime = std::chrono::high_resolution_clock::now();
 		parallel_for_each_pt(ints.cbegin(), ints.cend(), long_function);
-		endTime = high_resolution_clock::now();
+		endTime = std::chrono::high_resolution_clock::now();
 		print_results("Parallel-package_task ", startTime, endTime);
 
-		startTime = high_resolution_clock::now();
+		startTime = std::chrono::high_resolution_clock::now();
 		parallel_for_each_async(ints.cbegin(), ints.cend(), long_function);
-		endTime = high_resolution_clock::now();
+		endTime = std::chrono::high_resolution_clock::now();
 		print_results("Parallel-async        ", startTime, endTime);
 
 		std::cout << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;

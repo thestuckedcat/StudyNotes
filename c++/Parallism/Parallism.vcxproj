@@ -141,7 +141,9 @@
     <ClInclude Include="launch_a_thread.h" />
     <ClInclude Include="package_task_example.h" />
     <ClInclude Include="parallel_accumulation.h" />
+    <ClInclude Include="parallel_find_example.h" />
     <ClInclude Include="parallel_for_each.h" />
+    <ClInclude Include="parallel_prefix_sum.h" />
     <ClInclude Include="Parallel_quick_sort.h" />
     <ClInclude Include="pass_parameters.h" />
     <ClInclude Include="promise_future_example.h" />

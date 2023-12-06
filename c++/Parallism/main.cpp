@@ -27,7 +27,7 @@
 # include "parallel_for_each.h"
 # include "parallel_find_example.h"
 # include "parallel_prefix_sum.h"
-
+# include "parallel_matrix.h"
 int main() {
 	//launch_a_thread::run();
 
@@ -90,6 +90,9 @@ int main() {
 
 	//parallel_find_example::run();
 
-	parallel_prefix_sum::run();
+	//parallel_prefix_sum::run();
+
+	//parallel_matrix::run_multiple();
+	parallel_matrix::run_transpose();
 
 }

@@ -1,4 +1,5 @@
-﻿  main.cpp
+﻿  正在扫描源以查找模块依赖项...
+  main.cpp
 D:\Github-storage\StudyNotes\c++\Parallism\call_thread_guard.h(20,30): warning C4227: 使用了记时错误: 忽略引用上的限定符
   (编译源文件“main.cpp”)
   
@@ -84,6 +85,9 @@ D:\Github-storage\StudyNotes\c++\Parallism\parallel_matrix.h(141,26): warning C4
   (编译源文件“main.cpp”)
   
 D:\Github-storage\StudyNotes\c++\Parallism\parallel_matrix.h(157,30): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+  (编译源文件“main.cpp”)
+  
+D:\Github-storage\StudyNotes\c++\Parallism\coroutine_example.h(37,7): error C5231: 表达式 "co_await promise.final_suspend()" 必须是非引发的
   (编译源文件“main.cpp”)
   
 D:\Github-storage\StudyNotes\c++\Parallism\parallel_accumulation.h(41,18): warning C4244: “初始化”: 从“__int64”转换到“int”，可能丢失数据
@@ -202,4 +206,3 @@ D:\Github-storage\StudyNotes\c++\Parallism\parallel_prefix_sum.h(98,45): warning
 D:\Github-storage\StudyNotes\c++\Parallism\parallel_prefix_sum.h(98,30): warning C4244: “初始化”: 从“__int64”转换到“const unsigned long”，可能丢失数据
   (编译源文件“main.cpp”)
   
-  Parallism.vcxproj -> D:\Github-storage\StudyNotes\c++\Parallism\x64\Debug\Parallism.exe

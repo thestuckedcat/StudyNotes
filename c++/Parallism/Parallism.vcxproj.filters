@@ -111,9 +111,21 @@
     <ClInclude Include="parallel_matrix.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="experiment.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="coroutine_example.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Jthread_exampless.h">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Jthread_exampless.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

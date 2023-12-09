@@ -132,10 +132,12 @@
   <ItemGroup>
     <ClInclude Include="accumulate_with_async.h" />
     <ClInclude Include="call_thread_guard.h" />
+    <ClInclude Include="coroutine_example.h" />
     <ClInclude Include="dead_lock.h" />
     <ClInclude Include="deep_dive_in_async.h" />
     <ClInclude Include="Drive_example.h" />
     <ClInclude Include="exception_scenario_join.h" />
+    <ClInclude Include="experiment.h" />
     <ClInclude Include="future_asynchronous.h" />
     <ClInclude Include="join_joinable_detach.h" />
     <ClInclude Include="launch_a_thread.h" />
@@ -164,6 +166,8 @@
     <ClInclude Include="what_can_go_wrong_with_mutex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Jthread_exampless.cpp" />
+    <ClCompile Include="Jthread_exampless.h" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

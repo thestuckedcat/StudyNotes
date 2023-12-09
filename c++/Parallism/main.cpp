@@ -28,6 +28,10 @@
 # include "parallel_find_example.h"
 # include "parallel_prefix_sum.h"
 # include "parallel_matrix.h"
+# include "Jthread_exampless.h"
+# include "experiment.h"
+# include "coroutine_example.h"
+
 int main() {
 	//launch_a_thread::run();
 
@@ -93,6 +97,11 @@ int main() {
 	//parallel_prefix_sum::run();
 
 	//parallel_matrix::run_multiple();
-	parallel_matrix::run_transpose();
+	//parallel_matrix::run_transpose();
 
+	//My_Jthread_example
+	//run();
+
+	// coroutine example
+	run_coroutine_example();
 }

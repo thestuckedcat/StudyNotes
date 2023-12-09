@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Debug\\Jthread_example.h.obj",
+            "outputs": [
+                "D:\\Github-storage\\StudyNotes\\c++\\Parallism\\x64\\Debug\\vc143.pdb",
+                "x64\\Debug\\",
+                "D:\\Github-storage\\StudyNotes\\c++\\Parallism\\x64\\Debug\\Jthread_example.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "Jthread_example.h",
+                    "source-path": "d:\\github-storage\\studynotes\\c++\\parallism\\jthread_example.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}

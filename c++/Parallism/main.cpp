@@ -31,7 +31,7 @@
 # include "Jthread_exampless.h"
 # include "experiment.h"
 # include "coroutine_example.h"
-
+# include "lazy_generator.h"
 int main() {
 	//launch_a_thread::run();
 
@@ -104,6 +104,10 @@ int main() {
 
 	// coroutine example
 	//run_coroutine_example();
+
+
+	//lazy_generator
+	lazy_generator::run();
 
 
 }

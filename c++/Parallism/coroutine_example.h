@@ -11,6 +11,7 @@ class resumable {
 public:
 	struct promise_type; //用户定义的类，定义了协程的行为，例如初始化，挂起，恢复，销毁协程
 	using coro_handle = std::coroutine_handle<promise_type>;//简单的句柄，模板化协程句柄，持有堆协程的控制权，promise_type指定了这个句柄将操作哪个类型的协程，等同于promise类型作为模板参数的句柄
+	
 	resumable(coro_handle handle) :handle_(handle) { assert(handle); };//构造函数，将句柄作为参数。确保句柄是有效的
 	resumable(resumable&) = delete;//禁用copy constructor
 	resumable(resumable&&) = delete;//禁用move constructor

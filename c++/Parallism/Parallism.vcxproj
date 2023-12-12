@@ -131,6 +131,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="accumulate_with_async.h" />
+    <ClInclude Include="Barrier_selfimplemention.h" />
     <ClInclude Include="call_thread_guard.h" />
     <ClInclude Include="coroutine_example.h" />
     <ClInclude Include="dead_lock.h" />

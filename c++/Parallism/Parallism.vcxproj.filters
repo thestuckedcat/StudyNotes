@@ -123,6 +123,9 @@
     <ClInclude Include="Barrier_selfimplemention.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Atomic_example.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

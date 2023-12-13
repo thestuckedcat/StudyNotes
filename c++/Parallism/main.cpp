@@ -32,6 +32,7 @@
 # include "experiment.h"
 # include "coroutine_example.h"
 # include "lazy_generator.h"
+# include "Atomic_example.h"
 int main() {
 	//launch_a_thread::run();
 
@@ -107,7 +108,12 @@ int main() {
 
 
 	//lazy_generator
-	lazy_generator::run();
+	//lazy_generator::run();
 
+	//compare_exchange_example::run();
+	//atomic_pointer_example::run_commom_function_example();
+	//atomic_pointer_example::run_operations();
+
+	memory_model_example::run_code();
 
 }

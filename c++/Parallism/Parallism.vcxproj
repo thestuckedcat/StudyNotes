@@ -144,6 +144,7 @@
     <ClInclude Include="join_joinable_detach.h" />
     <ClInclude Include="launch_a_thread.h" />
     <ClInclude Include="lazy_generator.h" />
+    <ClInclude Include="Lock_free_data_structure.h" />
     <ClInclude Include="package_task_example.h" />
     <ClInclude Include="parallel_accumulation.h" />
     <ClInclude Include="parallel_find_example.h" />

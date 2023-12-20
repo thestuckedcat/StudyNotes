@@ -162,6 +162,137 @@ namespace Lock_free_stack {
 	};
 
 
+	template<typename T>
+	class lock_free_stack_with_harzard_pointer {
+
+		struct node {
+			std::shared_ptr<T> data;//使用shared_ptr
+			node* next;
+
+			node(T const& _data) :data{ std::make_shared<T>(_data) } {}
+		};
+
+		std::atomic<node*> head;
+		
+
+		static const int max_hazard_pointers = 100;
+
+		struct hazard_pointer {
+			std::atomic<std::thread::id> id;
+			std::atomic<void*> pointer;
+		};
+
+		hazard_pointer hazard_pointers[max_hazard_pointers];
+
+		class hazard_pointer_manager {
+			/*
+				每个线程都有一个分配的 hazard pointer manager object，当hazard pointer manager构建时，它将在危hazard pointer list中分配一个条目
+			*/
+			hazard_pointer* hp;
+		
+		public:
+			hazard_pointer_manager() :hp(nullptr) {
+				//find out empty slot in Hazard
+				for (unsigned i = 0; i < max_hazard_pointers; ++i) {
+					std::thread::id default_id;
+					if (hazard_pointers[i].id.compare_exchange_strong(default_id, std::this_thread::get_id()))//防止访问hazard_pointers的race condition
+					{
+						hp = &hazard_pointers[i];
+						break;
+					}
+				}
+
+				if (!hp) {
+					throw std::runtime_error("no hazard pointers available");
+				}
+			}
+
+			std::atomic<void*>& get_pointer() {
+				return hp->pointer;
+			}
+
+			~hazard_pointer_manager() {
+				//将存入的位置保存给hp，这样下一次就不需要遍历寻找
+				hp->pointer.store(nullptr);
+				hp->id.store(std::thread::id());
+			}
+
+		};
+
+		std::atomic<void*>& get_hazard_pointer_for_current_thread() {
+			static thread_local hazard_pointer_manager hz_manager;//allow us to have one manager object for each thread，如果只有static，那么所有的线程会共用，如果只有threadlocal或者什么都没有，那么每次调用就会生成一个新的manager
+			return hz_manager.get_pointer();
+		}
+
+		bool any_outstanding_hazards(node* p) {
+			//检查给定节点对象是否有任何未解决的危险指针
+			for (unsigned i = 0; i < max_hazard_pointers; ++i) {
+				if (hazard_pointers[i].pointer.load() == p) {
+					return true;
+				}
+				return false;
+			}
+		}
+
+		void reclaim_later(node* _node) {
+			_node->next = nodes_to_reclaim.load();
+			while (!nodes_to_reclaim.compare_exchange_weak(_node->next, _node));
+		}
+
+		void delete_nodes_with_no_hazards() {
+			node* current = nodes_to_reclaim.exchange(nullptr);
+
+			while (current) {
+				node* const next = current->next;
+				if (!any_outstanding_hazards(current)) {
+					delete current;
+				}
+				else {
+					reclaim_later(current);
+				}
+				current = next;
+			}
+		}
+
+	public:
+		void push(T const& _data) {
+			node* const new_node = new node(_data);
+
+			new_node->next = head.load();
+
+			while (!head.compare_exchange_weak(new_node->next, new_node));
+		}
+
+		void pop(T& result) {
+			
+			std::atomic<void*>& hp = get_hazard_pointer_for_current_thread();
+			node* old_head = head.load();
+
+			//防止运行到此处时（设置该节点为hazard pointer前），其他线程将这个old_head指向的node删除了，我们将下面改为do_while
+			do {
+				//set hazard pointer
+				hp.store(old_head);
+			} while (old_head && !head.compare_exchange_strong(old_head, old_head->next));
+
+			//clear hazard pointer
+			hp.store(nullptr);
+
+			std::shared_ptr<T> res;
+			if (old_head) {
+				res.swap(old_head->data);
+
+				if (any_outstanding_hazards(old_head)) {
+					reclaim_later(old_head);
+				}
+				else {
+					delete old_head;
+				}
+
+				delete_nodes_with_no_hazards();
+			}
+		}
+	};
+
 
 
 

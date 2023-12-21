@@ -175,7 +175,7 @@ namespace Lock_free_stack {
 		std::atomic<node*> head;
 		
 
-		static const int max_hazard_pointers = 100;
+		const int max_hazard_pointers = 100;
 
 		struct hazard_pointer {
 			std::atomic<std::thread::id> id;
@@ -233,6 +233,8 @@ namespace Lock_free_stack {
 				return false;
 			}
 		}
+		
+		std::atomic<node*> nodes_to_reclaim;
 
 		void reclaim_later(node* _node) {
 			_node->next = nodes_to_reclaim.load();
@@ -294,6 +296,105 @@ namespace Lock_free_stack {
 	};
 
 
+
+
+
+	template<typename T>
+	class lock_free_stack_ref_counting {
+	private:
+		struct node;
+
+		struct node_wrapper {
+			int external_count;
+			node* ptr;
+		};
+
+		struct node {
+			std::shared_ptr<T> data;
+			std::atomic<int> internal_count;
+			node_wrapper next;
+
+			node(T const& _data) :data(std::make_shared<T>(_data)), internal_count{ 0 } {}
+
+		};
+
+		std::atomic<node_wrapper> head;
+
+
+
+
+
+
+		void increment_head_ref_count(node_wrapper& old_counter) //必须要引用传入，因为old_counter可能会被其他增加reference
+		{
+			node_wrapper new_counter;//代表结果，old_counter其实是代表输入
+			
+			//这种操作以后都理解为，head实际上都是在高速变化的，我们通过截取其当前时段的静态状态，来进行操作，然后查看操作这段时间之后，是否这个状态改变了。如果改变了，重新做一遍，如果没变就提交上去。
+
+			do {
+				new_counter = old_counter;
+				++new_counter.external_count;
+			} while (!head.compare_exchange_strong(old_counter, new_counter));//在这里，如果其他wrapper先一步增加reference，那么  old_counter就会被head更新，然后再次尝试+1
+
+			old_counter.external_count = new_counter.external_count;//更新old_counter
+		}
+
+
+	public:
+		~lock_free_stack_ref_counting() {
+
+		}
+
+		void push(T const& data) {
+			//创建即将push的新node，此处是node wrapper
+			node_wrapper new_node;
+
+			//然后为这个node wrapper的node创建新的数据
+			new_node.ptr = new node(data);
+			
+			//表示基础链表中的引用
+			new_node.external_count = 1;
+
+			//更新head
+			new_node.ptr->next = head.load();
+			while (!head.compare_exchange_weak(new_node.ptr->next, new_node));
+		}
+
+		std::shared_ptr<T> pop() {
+			node_wrapper old_head = head.load();
+
+			while (true)
+			{
+				increment_head_ref_count(old_head);//此处也更新过old_head，有可能是head wrapper，在这个wrapper中指向一个null的node
+
+				node* const ptr = old_head.ptr;
+				if (!ptr) {//如果没东西pop
+					return std::shared_ptr<T>();
+				}
+
+				if (head.compare_exchange_strong(old_head, ptr->next)) // 如果当前head没有变化，则更新head
+				{
+					std::shared_ptr<T> res;
+					res.swap(ptr->data);
+
+					int const current_external_count = old_head.external_count - 2;//-2减去的是基础列表的引用与当前线程引用
+
+					if (ptr->internal_count.fetch_add(current_external_count) == 0) //内部计数应当与为外部计数的负数
+					{
+						delete ptr;
+					}
+					return res;
+				}
+				else if (ptr->internal_count.fectch_sub(1) == 1) //当前head对象被其他线程更改了，上面的compare_exchange函数会将old_head更新到新的head,这意味着当前线程不再引用该节点，因此我们必须减少internal count
+				{
+					//进入该block代表internal_count在减之前为0，也就是这条线程是保存引用的最后一个线程
+					//这里要特别设置==1
+					delete ptr;
+				}
+			}
+
+		}
+	};
 
 
 }

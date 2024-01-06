@@ -134,6 +134,7 @@
     <ClInclude Include="Atomic_example.h" />
     <ClInclude Include="Barrier_selfimplemention.h" />
     <ClInclude Include="call_thread_guard.h" />
+    <ClInclude Include="common.h" />
     <ClInclude Include="coroutine_example.h" />
     <ClInclude Include="dead_lock.h" />
     <ClInclude Include="deep_dive_in_async.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="ship_example.h" />
     <ClInclude Include="ship_example2.h" />
     <ClInclude Include="thread_local_storage.h" />
+    <ClInclude Include="thread_pool.h" />
     <ClInclude Include="thread_safe_queue.h" />
     <ClInclude Include="thread_safe_stack.h" />
     <ClInclude Include="transferring_thread_ownership.h" />

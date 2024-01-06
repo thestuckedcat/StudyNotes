@@ -129,6 +129,12 @@
     <ClInclude Include="Lock_free_data_structure.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="thread_pool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

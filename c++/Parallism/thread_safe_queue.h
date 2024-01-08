@@ -23,10 +23,18 @@ namespace thread_safe_queue_space {
 			queue = other_queue.queue;
 		}
 
-		void push(T& value) {
+		// 左值引用版本
+		void push(const T& value) {
 			std::lock_guard<std::mutex> lg(m);
 			queue.push(std::make_shared<T>(value));
 			cv.notify_one(); 
+		}
+
+		// 右值引用版本
+		void push(T&& value) {
+			std::lock_guard<std::mutex> lg(m);
+			queue.push(std::make_shared<T>(value));
+			cv.notify_one();
 		}
 
 		std::shared_ptr<T> pop() //combine pop and front
@@ -99,6 +107,31 @@ namespace thread_safe_queue_space {
 				queue.pop();
 				return true;
 			}
+		}
+
+		// 版本1: 返回std::shared_ptr<T>
+		std::shared_ptr<T> try_pop() {
+			std::lock_guard<std::mutex> lg(m);
+			if (queue.empty()) {
+				return std::shared_ptr<T>();
+			}
+
+			std::shared_ptr<T> ref(queue.front());
+			queue.pop();
+			return ref;
+		}
+
+		//版本2: 通过引用返回值，并返回操作是否成功的bool值
+		bool try_pop(T& value) {
+			std::lock_guard<std::mutex> lg(m);
+
+			if (queue.empty()) {
+				return false;
+			}
+
+			value = *(queue.front());
+			queue.pop();
+			return true;
 		}
 
 	};

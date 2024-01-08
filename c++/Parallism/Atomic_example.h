@@ -306,6 +306,7 @@ namespace date_dependency_synchronization {
 	struct X {
 		int i;
 		std::string s;
+
 	};
 
 	std::atomic<X*>p;
@@ -322,7 +323,7 @@ namespace date_dependency_synchronization {
 	}
 
 	void use_x() {
-		X* x;
+		X* x = nullptr;//不然会报错使用未初始化的局部变量。
 		while (!(x == p.load(std::memory_order_consume)));//synchronize only for p, no guarantee for a,当然如果用acquire，鉴于他们之间有happens-before的关系，这个时候是能保证a已经被存储的
 		assert(x->i == 42);
 		assert(x->s == "hello");

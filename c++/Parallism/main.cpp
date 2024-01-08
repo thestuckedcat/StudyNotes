@@ -33,6 +33,7 @@
 # include "coroutine_example.h"
 # include "lazy_generator.h"
 # include "Atomic_example.h"
+# include "thread_pool.h"
 int main() {
 	//launch_a_thread::run();
 
@@ -114,6 +115,9 @@ int main() {
 	//atomic_pointer_example::run_commom_function_example();
 	//atomic_pointer_example::run_operations();
 
-	memory_model_example::run_code();
+	//memory_model_example::run_code();
+
+	my_thread_pool_basic::run();
+
 
 }

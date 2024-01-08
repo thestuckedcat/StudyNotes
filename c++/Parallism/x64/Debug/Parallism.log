@@ -92,6 +92,12 @@ D:\Github-storage\StudyNotes\c++\Parallism\lazy_generator.h(97,5): warning C4033
   D:\Github-storage\StudyNotes\c++\Parallism\lazy_generator.h(97,5):
   当承诺类型“lazy_generator::Generator<int>::promise_type”未声明 "return_void" 时，从协同例程结果末尾关闭流会导致未定义的行为
   
+D:\Github-storage\StudyNotes\c++\Parallism\Atomic_example.h(354,20): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+  (编译源文件“main.cpp”)
+  
+D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(109,12): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 2 拥有了类型“std::thread::id”
+  (编译源文件“main.cpp”)
+  
 D:\Github-storage\StudyNotes\c++\Parallism\parallel_accumulation.h(41,18): warning C4244: “初始化”: 从“__int64”转换到“int”，可能丢失数据
   (编译源文件“main.cpp”)
   D:\Github-storage\StudyNotes\c++\Parallism\parallel_accumulation.h(41,18):

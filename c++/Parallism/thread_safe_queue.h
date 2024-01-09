@@ -32,8 +32,9 @@ namespace thread_safe_queue_space {
 
 		// 右值引用版本
 		void push(T&& value) {
+			std::cout << "右值引用" << std::endl;
 			std::lock_guard<std::mutex> lg(m);
-			queue.push(std::make_shared<T>(value));
+			queue.push(std::make_shared<T>(std::move(value)));
 			cv.notify_one();
 		}
 

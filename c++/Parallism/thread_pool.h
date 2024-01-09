@@ -5,6 +5,7 @@
 # include <iostream>
 # include "thread_safe_queue.h"
 # include <functional>
+# include <algorithm>
 
 namespace my_thread_pool_basic {
 	class join_threads {
@@ -25,6 +26,8 @@ namespace my_thread_pool_basic {
 		}
 
 	};
+
+
 
 	class thread_pool {
 		//用来停止所有线程的执行的标志，如果设置了，所有的线程都必须停止工作，代表我们将不再使用这个线程池
@@ -137,13 +140,55 @@ namespace my_thread_pool_with_waiting_threads {
 
 	};
 
+	class function_wrapper {
+		struct impl_base {
+			virtual void call() = 0;
+			virtual ~impl_base() {}
+		};
+
+		template<typename F>
+		struct impl_type : impl_base
+		{
+			F f;
+			impl_type(F&& f_) : f(std::move(f_)) {}
+			void call() { f(); }
+		};
+
+		std::unique_ptr<impl_base> impl;
+
+	public:
+		template<typename F>
+		function_wrapper(F&& f) :
+			impl(new impl_type<F>(std::move(f)))
+		{}
+
+		void operator()() { impl->call(); }
+
+		function_wrapper()
+		{}
+
+		function_wrapper(function_wrapper&& other) :
+			impl(std::move(other.impl))
+		{}
+
+		function_wrapper& operator=(function_wrapper&& other)
+		{
+			impl = std::move(other.impl);
+			return *this;
+		}
+
+		function_wrapper(const function_wrapper&) = delete;
+		function_wrapper(function_wrapper&) = delete;
+	};
 
 	class thread_pool {
 		//用来停止所有线程的执行的标志，如果设置了，所有的线程都必须停止工作，代表我们将不再使用这个线程池
 		std::atomic_bool done;
 
 		//待处理工件队列，每个线程在完成当前任务后都会检查下一个线程。存入类型
-		thread_safe_queue_space::thread_safe_queue<std::function<void()>> work_queue;//需要存入的对象copy constructable
+		//thread_safe_queue_space::thread_safe_queue<std::function<void()>> work_queue;//需要存入的对象copy constructable
+		//我们需要自己写一个函数包装器
+		thread_safe_queue_space::thread_safe_queue<function_wrapper> work_queue;
 
 		//线程池
 		std::vector<std::thread> threads;
@@ -159,7 +204,7 @@ namespace my_thread_pool_with_waiting_threads {
 				// 尝试从队列中取出任务
 				// 若是成功取出任务，那么我们可以执行任务。
 				// 若是取出任务失败，则可以yield这个线程，从而让给其他线程CPU空间。
-				std::function<void()> task;
+				function_wrapper task;
 				if (work_queue.try_pop(task)) {
 
 					task();
@@ -202,19 +247,104 @@ namespace my_thread_pool_with_waiting_threads {
 			done = true;
 		}
 
-		template<typename Function_type, typename... Args>
-		auto sumbmit(Function_type f, Args&&... args) -> std::future<std::invoke_result_t<Function_type, Args...>>
+		/*template<typename Function_type, typename... Args>
+		auto submit(Function_type&& f, Args&&... args) -> std::future<std::invoke_result_t<Function_type, Args...>>
 		{
 			typedef typename std::invoke_result_t<Function_type, Args... > result_type;
-			std::packaged_task<result_type> task(std::move(f));
+			std::packaged_task<result_type()> task(std::forward<Function_type>, std::forward<Args>(args)...);
 			std::future<result_type> res(task.get_future());
 
 			work_queue.push(std::move(task));
-			//这一句会报错，首先就是因为我们已经将callable function包装起来了，更深层因为task对应的packaged_task是movable而非copy constructable
-			//基于更深层的原因，我们也不能使用thread_safe_queue_space::thread_safe_queue<std::packaged_task> work_queue;
 
 			
 			return res;
+		}*/
+		template<typename Function_type>
+		auto submit(Function_type f) -> std::future<std::invoke_result_t<Function_type>>
+		{
+			typedef typename std::invoke_result_t<Function_type> result_type;
+			std::packaged_task<result_type()> task(f);
+			std::future<result_type> res(task.get_future());
+
+			work_queue.push(std::move(task));
+
+
+			return res;
 		}
 	};
+
+	// 每个线程自己进行的加法
+	template<typename Iterator, typename T>
+	struct accumulate_block
+	{
+		T operator()(Iterator first, Iterator last)
+		{
+			T value = std::accumulate(first, last, T());//以T的默认初始构造作为初始值
+			printf(" %d - %d  \n", std::this_thread::get_id(), value);
+			return value;
+		}
+	};
+
+	//
+	template<typename Iterator, typename T>
+	T parallel_accumulate(Iterator first, Iterator last, T init)
+	{
+		unsigned long const length = std::distance(first, last);
+		thread_pool pool;
+
+		if (!length)
+			return init;
+
+		// 计算任务数量
+		unsigned long const min_per_thread = 25;
+		unsigned long const max_threads =
+			(length + min_per_thread - 1) / min_per_thread;
+
+		unsigned long const hardware_threads =
+			std::thread::hardware_concurrency();
+
+		unsigned long const num_threads =
+			std::min(hardware_threads != 0 ? hardware_threads : 2, max_threads);
+
+		unsigned long const block_size = length / num_threads;
+
+
+		//分配任务给thread pool
+		std::vector<std::future<T> > futures(num_threads - 1);
+
+		Iterator block_start = first;
+		for (unsigned long i = 0; i < (num_threads - 1); ++i)
+		{
+			Iterator block_end = block_start;
+			std::advance(block_end, block_size);
+			//提交
+			futures[i] = pool.submit(std::bind(accumulate_block<Iterator, T>(), block_start, block_end));//move
+			block_start = block_end;
+		}
+		T last_result = accumulate_block<int*, int>()(block_start, last);
+
+
+		//等待任务完成
+		T result = init;
+		for (unsigned long i = 0; i < (num_threads - 1); ++i)
+		{
+			result += futures[i].get();
+		}
+		result += last_result;
+		return result;
+	}
+
+	void run() {
+		const int size = 1000;
+		int* my_array = new int[size];
+		srand(0);
+
+
+		for (size_t i = 0; i < size; i++) {
+			my_array[i] = 1;
+		}
+
+		long result = parallel_accumulate<int*, int>(my_array, my_array + size, 0);
+		std::cout << "final sum is -" << result << std::endl;
+	}
 }

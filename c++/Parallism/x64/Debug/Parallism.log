@@ -95,123 +95,25 @@ D:\Github-storage\StudyNotes\c++\Parallism\lazy_generator.h(97,5): warning C4033
 D:\Github-storage\StudyNotes\c++\Parallism\Atomic_example.h(354,20): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
   (编译源文件“main.cpp”)
   
-D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(109,12): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 2 拥有了类型“std::thread::id”
+D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(112,12): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 2 拥有了类型“std::thread::id”
   (编译源文件“main.cpp”)
   
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_accumulation.h(41,18): warning C4244: “初始化”: 从“__int64”转换到“int”，可能丢失数据
+D:\Github-storage\StudyNotes\c++\Parallism\thread_safe_queue.h(133,10): error C2280: “my_thread_pool_with_waiting_threads::function_wrapper &my_thread_pool_with_waiting_threads::function_wrapper::operator =(const my_thread_pool_with_waiting_threads::function_wrapper &)”: 尝试引用已删除的函数
   (编译源文件“main.cpp”)
-  D:\Github-storage\StudyNotes\c++\Parallism\parallel_accumulation.h(41,18):
+  D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(182,2):
+  编译器已在此处生成“my_thread_pool_with_waiting_threads::function_wrapper::operator =”
+  D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(182,2):
+  “my_thread_pool_with_waiting_threads::function_wrapper &my_thread_pool_with_waiting_threads::function_wrapper::operator =(const my_thread_pool_with_waiting_threads::function_wrapper &)”: 由于“my_thread_pool_with_waiting_threads::function_wrapper”具有用户定义的 移动构造函数，因此已隐式删除函数
+  D:\Github-storage\StudyNotes\c++\Parallism\thread_safe_queue.h(133,10):
   模板实例化上下文(最早的实例化上下文)为
-  	D:\Github-storage\StudyNotes\c++\Parallism\parallel_accumulation.h(86,17):
-  	查看对正在编译的函数 模板 实例化“T parallel_accumulation::parallel_accumulate<int*,int>(iterator,iterator,T &)”的引用
+  	D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(191,64):
+  	查看对正在编译的 类 模板 实例化“thread_safe_queue_space::thread_safe_queue<my_thread_pool_with_waiting_threads::function_wrapper>”的引用
+  	D:\Github-storage\StudyNotes\c++\Parallism\thread_safe_queue.h(126,8):
+  	在编译 类 模板 成员函数“bool thread_safe_queue_space::thread_safe_queue<my_thread_pool_with_waiting_threads::function_wrapper>::try_pop(T &)”时
           with
           [
-              T=int,
-              iterator=int *
+              T=my_thread_pool_with_waiting_threads::function_wrapper
           ]
+  		D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(208,5):
+  		请参阅 "my_thread_pool_with_waiting_threads::thread_pool::worker_thread" 中对 "thread_safe_queue_space::thread_safe_queue<my_thread_pool_with_waiting_threads::function_wrapper>::try_pop" 的第一个引用
   
-D:\Github-storage\StudyNotes\c++\Parallism\accumulate_with_async.h(13,15): warning C4244: “初始化”: 从“__int64”转换到“long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  D:\Github-storage\StudyNotes\c++\Parallism\accumulate_with_async.h(13,15):
-  模板实例化上下文(最早的实例化上下文)为
-  	D:\Github-storage\StudyNotes\c++\Parallism\accumulate_with_async.h(32,33):
-  	查看对正在编译的函数 模板 实例化“int accumulate_with_async::parallel_accumulate<std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>>(iterator,iterator)”的引用
-          with
-          [
-              _Ty=int,
-              iterator=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<int>>>
-          ]
-  
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_for_each.h(51,45): warning C4244: “初始化”: 从“__int64”转换到“unsigned long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  D:\Github-storage\StudyNotes\c++\Parallism\parallel_for_each.h(51,45):
-  模板实例化上下文(最早的实例化上下文)为
-  	D:\Github-storage\StudyNotes\c++\Parallism\parallel_for_each.h(165,3):
-  	查看对正在编译的函数 模板 实例化“void parallel_for_each::parallel_for_each_pt<std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>,parallel_for_each::run::<lambda_1>>(Iterator,Iterator,Func)”的引用
-          with
-          [
-              _Ty=int,
-              Iterator=std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<int>>>,
-              Func=parallel_for_each::run::<lambda_1>
-          ]
-  
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_for_each.h(51,30): warning C4244: “初始化”: 从“__int64”转换到“const unsigned long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_for_each.h(105,45): warning C4244: “初始化”: 从“__int64”转换到“unsigned long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  D:\Github-storage\StudyNotes\c++\Parallism\parallel_for_each.h(105,45):
-  模板实例化上下文(最早的实例化上下文)为
-  	D:\Github-storage\StudyNotes\c++\Parallism\parallel_for_each.h(170,3):
-  	查看对正在编译的函数 模板 实例化“void parallel_for_each::parallel_for_each_async<std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>,parallel_for_each::run::<lambda_1>>(Iterator,Iterator,Func)”的引用
-          with
-          [
-              _Ty=int,
-              Iterator=std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<int>>>,
-              Func=parallel_for_each::run::<lambda_1>
-          ]
-  
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_for_each.h(105,30): warning C4244: “初始化”: 从“__int64”转换到“const unsigned long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_find_example.h(57,45): warning C4244: “初始化”: 从“__int64”转换到“unsigned long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  D:\Github-storage\StudyNotes\c++\Parallism\parallel_find_example.h(57,45):
-  模板实例化上下文(最早的实例化上下文)为
-  	D:\Github-storage\StudyNotes\c++\Parallism\parallel_find_example.h(180,16):
-  	查看对正在编译的函数 模板 实例化“Iterator parallel_find_example::parallel_find_pt<std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>,int>(Iterator,Iterator,MatchType)”的引用
-          with
-          [
-              Iterator=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<int>>>,
-              _Ty=int,
-              MatchType=int
-          ]
-  
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_find_example.h(57,30): warning C4244: “初始化”: 从“__int64”转换到“const unsigned long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_find_example.h(117,46): warning C4244: “初始化”: 从“__int64”转换到“unsigned long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  D:\Github-storage\StudyNotes\c++\Parallism\parallel_find_example.h(117,46):
-  模板实例化上下文(最早的实例化上下文)为
-  	D:\Github-storage\StudyNotes\c++\Parallism\parallel_find_example.h(202,11):
-  	查看对正在编译的函数 模板 实例化“Iterator parallel_find_example::parallel_find_async<std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>,int>(Iterator,Iterator,MatchType,std::atomic<bool> &)”的引用
-          with
-          [
-              Iterator=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<int>>>,
-              _Ty=int,
-              MatchType=int
-          ]
-  
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_find_example.h(117,31): warning C4244: “初始化”: 从“__int64”转换到“const unsigned long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_prefix_sum.h(36,24): warning C4244: “初始化”: 从“__int64”转换到“unsigned long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  D:\Github-storage\StudyNotes\c++\Parallism\parallel_prefix_sum.h(36,24):
-  模板实例化上下文(最早的实例化上下文)为
-  	D:\Github-storage\StudyNotes\c++\Parallism\parallel_prefix_sum.h(275,4):
-  	查看对正在编译的函数 模板 实例化“void parallel_prefix_sum::sequential_partial_sum<std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>,std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>>(const Iterator,const Iterator,OutIterator)”的引用
-          with
-          [
-              _Ty=int,
-              Iterator=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<int>>>,
-              OutIterator=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<int>>>
-          ]
-  
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_prefix_sum.h(98,45): warning C4244: “初始化”: 从“__int64”转换到“unsigned long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  D:\Github-storage\StudyNotes\c++\Parallism\parallel_prefix_sum.h(98,45):
-  模板实例化上下文(最早的实例化上下文)为
-  	D:\Github-storage\StudyNotes\c++\Parallism\parallel_prefix_sum.h(298,4):
-  	查看对正在编译的函数 模板 实例化“void parallel_prefix_sum::parallel_partial_sum<std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>>(Iterator,Iterator)”的引用
-          with
-          [
-              _Ty=int,
-              Iterator=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<int>>>
-          ]
-  
-D:\Github-storage\StudyNotes\c++\Parallism\parallel_prefix_sum.h(98,30): warning C4244: “初始化”: 从“__int64”转换到“const unsigned long”，可能丢失数据
-  (编译源文件“main.cpp”)
-  
-  Parallism.vcxproj -> D:\Github-storage\StudyNotes\c++\Parallism\x64\Debug\Parallism.exe

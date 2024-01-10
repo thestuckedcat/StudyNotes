@@ -140,46 +140,58 @@ namespace my_thread_pool_with_waiting_threads {
 
 	};
 
+	
+	// function_wrapper 是一个类型擦除的工具类，用于封装和调用任何可调用对象（如函数、Lambda 表达式和函数对象）。
 	class function_wrapper {
+		// impl_base 是一个内部抽象基类，用于定义统一的调用接口。
 		struct impl_base {
 			virtual void call() = 0;
 			virtual ~impl_base() {}
 		};
 
+		// impl_type 是一个模板子类，继承自 impl_base。
+		// 它封装了一个具体的可调用对象。
 		template<typename F>
-		struct impl_type : impl_base
-		{
-			F f;
+		struct impl_type : impl_base {
+			F f; 
 			impl_type(F&& f_) : f(std::move(f_)) {}
 			void call() { f(); }
 		};
 
+		// impl 是一个指向 impl_base 的 unique_ptr，用于存储具体的 impl_type 实例。
 		std::unique_ptr<impl_base> impl;
 
 	public:
+		// 构造函数，接受任何可调用对象，并将其封装在 impl_type 中。
 		template<typename F>
 		function_wrapper(F&& f) :
 			impl(new impl_type<F>(std::move(f)))
 		{}
 
+		// 调用运算符，通过 impl 指针调用实际的可调用对象。
 		void operator()() { impl->call(); }
 
-		function_wrapper()
-		{}
+		// 默认构造函数。
+		function_wrapper() {}
 
+		// 移动构造函数，允许将 function_wrapper 对象之间进行移动。
 		function_wrapper(function_wrapper&& other) :
 			impl(std::move(other.impl))
 		{}
 
-		function_wrapper& operator=(function_wrapper&& other)
-		{
+		// 移动赋值运算符，允许将 function_wrapper 对象之间进行移动。
+		function_wrapper& operator=(function_wrapper&& other) {
 			impl = std::move(other.impl);
 			return *this;
 		}
 
+		// 删除拷贝构造函数和拷贝赋值运算符，防止对象被拷贝。
 		function_wrapper(const function_wrapper&) = delete;
 		function_wrapper(function_wrapper&) = delete;
 	};
+	
+
+
 
 	class thread_pool {
 		//用来停止所有线程的执行的标志，如果设置了，所有的线程都必须停止工作，代表我们将不再使用这个线程池
@@ -204,6 +216,7 @@ namespace my_thread_pool_with_waiting_threads {
 				// 尝试从队列中取出任务
 				// 若是成功取出任务，那么我们可以执行任务。
 				// 若是取出任务失败，则可以yield这个线程，从而让给其他线程CPU空间。
+				//std::function<void()> task;
 				function_wrapper task;
 				if (work_queue.try_pop(task)) {
 
@@ -248,15 +261,18 @@ namespace my_thread_pool_with_waiting_threads {
 		}
 
 		/*template<typename Function_type, typename... Args>
-		auto submit(Function_type&& f, Args&&... args) -> std::future<std::invoke_result_t<Function_type, Args...>>
-		{
-			typedef typename std::invoke_result_t<Function_type, Args... > result_type;
-			std::packaged_task<result_type()> task(std::forward<Function_type>, std::forward<Args>(args)...);
-			std::future<result_type> res(task.get_future());
+		auto submit(Function_type f, Args&&... args) -> std::future<std::invoke_result_t<Function_type, Args...>> {
+			typedef std::invoke_result_t<Function_type, Args...> result_type;
 
+			// 创建 std::packaged_task，绑定函数和参数
+			std::packaged_task<result_type()> task(
+				std::bind(std::forward<Function_type>(f), std::forward<Args>(args)...)
+			);
+			std::future<result_type> res = task.get_future();
+
+			// 将任务移动到工作队列
 			work_queue.push(std::move(task));
 
-			
 			return res;
 		}*/
 		template<typename Function_type>
@@ -264,7 +280,7 @@ namespace my_thread_pool_with_waiting_threads {
 		{
 			typedef typename std::invoke_result_t<Function_type> result_type;
 			std::packaged_task<result_type()> task(f);
-			std::future<result_type> res(task.get_future());
+			std::future<result_type> res=task.get_future();
 
 			work_queue.push(std::move(task));
 

@@ -32,7 +32,7 @@ namespace thread_safe_queue_space {
 
 		// 右值引用版本
 		void push(T&& value) {
-			std::cout << "右值引用" << std::endl;
+			//std::cout << "右值引用" << std::endl;
 			std::lock_guard<std::mutex> lg(m);
 			queue.push(std::make_shared<T>(std::move(value)));
 			cv.notify_one();
@@ -130,7 +130,7 @@ namespace thread_safe_queue_space {
 				return false;
 			}
 
-			value = *(queue.front());
+			value =std::move( *(queue.front()));//byd这里找bug找了我半天，当队列是不可复制的例如packaged_task时，就会报错。
 			queue.pop();
 			return true;
 		}

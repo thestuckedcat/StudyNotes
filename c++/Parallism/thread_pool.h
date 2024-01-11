@@ -6,6 +6,7 @@
 # include "thread_safe_queue.h"
 # include <functional>
 # include <algorithm>
+# include <list>
 
 namespace my_thread_pool_basic {
 	class join_threads {
@@ -287,6 +288,19 @@ namespace my_thread_pool_with_waiting_threads {
 
 			return res;
 		}
+
+
+
+		// 在waiting task案例中使用
+		void run_pending_task() {
+			function_wrapper task;
+			if (work_queue.try_pop(task)) {
+				task();
+			}
+			else {
+				std::this_thread::yield();
+			}
+		}
 	};
 
 	// 每个线程自己进行的加法
@@ -362,5 +376,84 @@ namespace my_thread_pool_with_waiting_threads {
 
 		long result = parallel_accumulate<int*, int>(my_array, my_array + size, 0);
 		std::cout << "final sum is -" << result << std::endl;
+	}
+
+
+
+	// thread pool waiting other tasks
+
+
+	// 并行版本的quick sort
+	template<typename T>
+	struct sorter
+	{
+		thread_pool pool;
+
+		std::list<T> do_sort(std::list<T> & chunk_data)
+		{
+			if (chunk_data.size() < 2)
+				return chunk_data;
+
+			std::list<T> result;
+
+			// void splice( const_iterator pos, list& other, const_iterator it );
+			// Transfers the element pointed to by it from other into *this. The element is inserted before the element pointed to by pos.
+			result.splice(result.begin(), chunk_data, chunk_data.begin());
+
+			T const& partition_val = *result.begin();
+
+			// ForwardIt partition( ForwardIt first, ForwardIt last, UnaryPredicate p );
+			// Reorders the elements in the range [first, last) in such a way that all elements for which the predicate p returns true precede the elements for which predicate p returns false. Relative order of the elements is not preserved.
+			typename std::list<T>::iterator divide_point = std::partition(chunk_data.begin(), chunk_data.end(), [&](T const& val) {
+				
+				return val < partition_val;
+				});
+
+			std::list<T> new_lower_chunk;
+			new_lower_chunk.splice(new_lower_chunk.end(), chunk_data, chunk_data.begin(), divide_point);
+
+			// 排序
+			std::future<std::list<T>> new_lower = pool.submit(std::bind(&sorter::do_sort, this, std::move(new_lower_chunk)));
+
+			std::list<T> new_higher(do_sort(chunk_data));
+
+			//这种写法会造成死锁
+			//result.splice(result.end(), new_higher);
+			//result.splice(result.begin(), new_lower.get());
+
+			result.splice(result.end(), new_higher);
+			//手动暂停，为这个线程分配新的任务，直到某个线程把new_lower的活干了。
+			while (!new_lower._Is_ready()) {
+				pool.run_pending_task();
+			}
+			result.splice(result.begin(), new_lower.get());
+
+			return result;
+		}
+	};
+
+	template<typename T> 
+	std::list<T> parallel_quick_sort(std::list<T> input) {
+		if (input.empty()) {
+			return input;
+		}
+		sorter<T> s;
+		return s.do_sort(input);
+	}
+
+	void run_quick_sort() {
+		const int size = 900;
+		std::list<int> my_array;
+		srand(0);
+
+		for (size_t i = 0; i < size; i++) {
+			my_array.push_back(rand());
+		}
+
+		my_array = parallel_quick_sort(my_array);
+		for (size_t i = 0; i < size; i++) {
+			std::cout << my_array.front() << std::endl;
+			my_array.pop_front();
+		}
 	}
 }

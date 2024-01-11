@@ -118,7 +118,8 @@ int main() {
 	//memory_model_example::run_code();
 
 	//my_thread_pool_basic::run();
-	my_thread_pool_with_waiting_threads::run();
+	//my_thread_pool_with_waiting_threads::run();
+	my_thread_pool_with_waiting_threads::run_quick_sort();
 
 
 }

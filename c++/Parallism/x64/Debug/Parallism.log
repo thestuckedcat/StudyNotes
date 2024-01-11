@@ -95,7 +95,7 @@ D:\Github-storage\StudyNotes\c++\Parallism\lazy_generator.h(97,5): warning C4033
 D:\Github-storage\StudyNotes\c++\Parallism\Atomic_example.h(354,20): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
   (编译源文件“main.cpp”)
   
-D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(112,12): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 2 拥有了类型“std::thread::id”
+D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(113,12): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 2 拥有了类型“std::thread::id”
   (编译源文件“main.cpp”)
   
 D:\Github-storage\StudyNotes\c++\Parallism\parallel_accumulation.h(41,18): warning C4244: “初始化”: 从“__int64”转换到“int”，可能丢失数据
@@ -214,11 +214,11 @@ D:\Github-storage\StudyNotes\c++\Parallism\parallel_prefix_sum.h(98,45): warning
 D:\Github-storage\StudyNotes\c++\Parallism\parallel_prefix_sum.h(98,30): warning C4244: “初始化”: 从“__int64”转换到“const unsigned long”，可能丢失数据
   (编译源文件“main.cpp”)
   
-D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(312,45): warning C4244: “初始化”: 从“__int64”转换到“unsigned long”，可能丢失数据
+D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(322,45): warning C4244: “初始化”: 从“__int64”转换到“unsigned long”，可能丢失数据
   (编译源文件“main.cpp”)
-  D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(312,45):
+  D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(322,45):
   模板实例化上下文(最早的实例化上下文)为
-  	D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(367,17):
+  	D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(377,17):
   	查看对正在编译的函数 模板 实例化“T my_thread_pool_with_waiting_threads::parallel_accumulate<int*,int>(Iterator,Iterator,T)”的引用
           with
           [
@@ -226,30 +226,30 @@ D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(312,45): warning C4244:
               Iterator=int *
           ]
   
-D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(312,30): warning C4244: “初始化”: 从“__int64”转换到“const unsigned long”，可能丢失数据
+D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(322,30): warning C4244: “初始化”: 从“__int64”转换到“const unsigned long”，可能丢失数据
   (编译源文件“main.cpp”)
   
-D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(303,11): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“std::thread::id”
+D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(313,11): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“std::thread::id”
   (编译源文件“main.cpp”)
-  D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(303,11):
+  D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(313,11):
   模板实例化上下文(最早的实例化上下文)为
-  	D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(367,17):
+  	D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(377,17):
   	查看对正在编译的函数 模板 实例化“T my_thread_pool_with_waiting_threads::parallel_accumulate<int*,int>(Iterator,Iterator,T)”的引用
           with
           [
               T=int,
               Iterator=int *
           ]
-  	D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(341,68):
+  	D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(351,68):
   	查看对正在编译的 类 模板 实例化“my_thread_pool_with_waiting_threads::accumulate_block<int *,int>”的引用
-  	D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(300,5):
+  	D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(310,5):
   	在编译 类 模板 成员函数“T my_thread_pool_with_waiting_threads::accumulate_block<int *,T>::operator ()(Iterator,Iterator)”时
           with
           [
               T=int,
               Iterator=int *
           ]
-  		D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(344,17):
+  		D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(354,17):
   		请参阅 "my_thread_pool_with_waiting_threads::parallel_accumulate" 中对 "my_thread_pool_with_waiting_threads::accumulate_block<int *,int>::operator ()" 的第一个引用
   
   Parallism.vcxproj -> D:\Github-storage\StudyNotes\c++\Parallism\x64\Debug\Parallism.exe

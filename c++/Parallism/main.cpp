@@ -34,6 +34,7 @@
 # include "lazy_generator.h"
 # include "Atomic_example.h"
 # include "thread_pool.h"
+# include "thread_pool_local_queue.h"
 int main() {
 	//launch_a_thread::run();
 
@@ -119,7 +120,10 @@ int main() {
 
 	//my_thread_pool_basic::run();
 	//my_thread_pool_with_waiting_threads::run();
-	my_thread_pool_with_waiting_threads::run_quick_sort();
+	//my_thread_pool_with_waiting_threads::run_quick_sort();
+
+
+	my_thread_pool_with_local_queue::run_quick_sort();
 
 
 }

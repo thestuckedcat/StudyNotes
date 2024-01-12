@@ -161,6 +161,7 @@
     <ClInclude Include="ship_example2.h" />
     <ClInclude Include="thread_local_storage.h" />
     <ClInclude Include="thread_pool.h" />
+    <ClInclude Include="thread_pool_local_queue.h" />
     <ClInclude Include="thread_safe_queue.h" />
     <ClInclude Include="thread_safe_stack.h" />
     <ClInclude Include="transferring_thread_ownership.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="Jthread_exampless.cpp" />
     <ClCompile Include="Jthread_exampless.h" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="thread_pool_local_queue.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

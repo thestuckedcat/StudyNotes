@@ -137,35 +137,36 @@ namespace thread_safe_queue_space {
 
 	};
 
+	
+	////测试
 
-	//测试
+	//void producer(thread_safe_queue<int>& queue) {
+	//	/*它在一个循环中生成一系列的整数（从 0 到 9），并将这些整数推送到传入的 thread_safe_queue 对象中。每次推送后，它会暂停一小段时间（100毫秒）*/
+	//	for (int i = 0; i < 10; ++i) {
+	//		std::cout << "Producing " << i << std::endl;
+	//		queue.push(i);
+	//		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	//	}
+	//}
 
-	void producer(thread_safe_queue<int>& queue) {
-		/*它在一个循环中生成一系列的整数（从 0 到 9），并将这些整数推送到传入的 thread_safe_queue 对象中。每次推送后，它会暂停一小段时间（100毫秒）*/
-		for (int i = 0; i < 10; ++i) {
-			std::cout << "Producing " << i << std::endl;
-			queue.push(i);
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-	}
+	//void consumer(thread_safe_queue<int>& queue) {
+	//	/*它尝试从队列中取出元素，并在每次尝试后暂停一小段时间（150毫秒）。这个函数使用了 wait_pop 方法，这意味着如果队列为空，消费者线程将等待直到队列中有元素可供消费。一旦队列中有元素，消费者线程将取出元素并打印它。*/
+	//	for (int i = 0; i < 10; ++i) {
+	//		auto item = queue.wait_pop();
+	//		if (item) {
+	//			std::cout << "Consumed " << *item << std::endl;
+	//		}
+	//		std::this_thread::sleep_for(std::chrono::milliseconds(150));
+	//	}
+	//}
+	//void run() {
+	//	thread_safe_queue<int> tsq;
 
-	void consumer(thread_safe_queue<int>& queue) {
-		/*它尝试从队列中取出元素，并在每次尝试后暂停一小段时间（150毫秒）。这个函数使用了 wait_pop 方法，这意味着如果队列为空，消费者线程将等待直到队列中有元素可供消费。一旦队列中有元素，消费者线程将取出元素并打印它。*/
-		for (int i = 0; i < 10; ++i) {
-			auto item = queue.wait_pop();
-			if (item) {
-				std::cout << "Consumed " << *item << std::endl;
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(150));
-		}
-	}
-	void run() {
-		thread_safe_queue<int> tsq;
+	//	std::thread producer_thread(producer, std::ref(tsq));
+	//	std::thread consumer_thread(consumer, std::ref(tsq));
 
-		std::thread producer_thread(producer, std::ref(tsq));
-		std::thread consumer_thread(consumer, std::ref(tsq));
-
-		producer_thread.join();
-		consumer_thread.join();
-	}
+	//	producer_thread.join();
+	//	consumer_thread.join();
+	//}
+	
 }

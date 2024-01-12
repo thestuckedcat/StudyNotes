@@ -7,6 +7,10 @@
 # include <functional>
 # include <algorithm>
 # include <list>
+# include <memory>
+# include <queue>
+# include <future>
+# include <numeric>
 
 namespace my_thread_pool_basic {
 	class join_threads {
@@ -442,7 +446,7 @@ namespace my_thread_pool_with_waiting_threads {
 	}
 
 	void run_quick_sort() {
-		const int size = 900;
+		const int size = 1000;
 		std::list<int> my_array;
 		srand(0);
 
@@ -457,3 +461,5 @@ namespace my_thread_pool_with_waiting_threads {
 		}
 	}
 }
+
+

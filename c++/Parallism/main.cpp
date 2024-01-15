@@ -35,6 +35,7 @@
 # include "Atomic_example.h"
 # include "thread_pool.h"
 # include "thread_pool_local_queue.h"
+# include "thread_pool_work_stealing.h"
 int main() {
 	//launch_a_thread::run();
 
@@ -123,7 +124,9 @@ int main() {
 	//my_thread_pool_with_waiting_threads::run_quick_sort();
 
 
-	my_thread_pool_with_local_queue::run_quick_sort();
+	//my_thread_pool_with_local_queue::run_quick_sort();
+
+	thread_pool_with_work_stealing::run_quick_sort();
 
 
 }

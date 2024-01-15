@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -162,6 +162,7 @@
     <ClInclude Include="thread_local_storage.h" />
     <ClInclude Include="thread_pool.h" />
     <ClInclude Include="thread_pool_local_queue.h" />
+    <ClInclude Include="thread_pool_work_stealing.h" />
     <ClInclude Include="thread_safe_queue.h" />
     <ClInclude Include="thread_safe_stack.h" />
     <ClInclude Include="transferring_thread_ownership.h" />
@@ -177,6 +178,7 @@
     <ClCompile Include="Jthread_exampless.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="thread_pool_local_queue.cpp" />
+    <ClCompile Include="thread_pool_with_work_stealing.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -138,6 +138,9 @@
     <ClInclude Include="thread_pool_local_queue.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="thread_pool_work_stealing.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -150,6 +153,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="thread_pool_local_queue.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="thread_pool_with_work_stealing.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

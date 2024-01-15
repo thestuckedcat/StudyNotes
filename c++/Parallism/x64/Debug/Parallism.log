@@ -252,6 +252,6 @@ D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(317,11): warning C4477:
   		D:\Github-storage\StudyNotes\c++\Parallism\thread_pool.h(358,17):
   		请参阅 "my_thread_pool_with_waiting_threads::parallel_accumulate" 中对 "my_thread_pool_with_waiting_threads::accumulate_block<int *,int>::operator ()" 的第一个引用
   
-  thread_pool_local_queue.cpp
+  thread_pool_with_work_stealing.cpp
   正在生成代码...
   Parallism.vcxproj -> D:\Github-storage\StudyNotes\c++\Parallism\x64\Debug\Parallism.exe

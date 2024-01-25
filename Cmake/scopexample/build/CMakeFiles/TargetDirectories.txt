@@ -1,0 +1,2 @@
+D:/Github-storage/StudyNotes/Cmake/scopexample/build/CMakeFiles/ALL_BUILD.dir
+D:/Github-storage/StudyNotes/Cmake/scopexample/build/CMakeFiles/ZERO_CHECK.dir

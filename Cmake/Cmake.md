@@ -440,7 +440,7 @@ build/Hello.exe
 
 
 
-### 4.3.6 VScode中切换编译器
+### 4.3.6 ==VScode中切换编译器==
 
 `cmake --help`能发现许多生成器，星号是默认的，我们一般倾向于使用MinGW Makefiles，因为微软的没开源
 
@@ -847,6 +847,143 @@ message("FirstArg After Function =  ${FirstArg}")
 
 ### 4.3.12 作用域
 
+CMake有两种作用域
+
+* 函数作用域：Function scope
+
+  * 所调用的函数继承所有caller域的变量
+
+  * 这些变量并不会影响caller域的变量
+
+    ```cmake
+    cmake_minimum_required(VERSION 3.20.0)
+    
+    project(scope)
+    
+    function(InFunc)
+      message("-> In: ${Var}")
+      set(Var 3)
+      message("<- In: ${Var}")
+    endfunction()
+    
+    
+    function(OutFunc )
+      message("-> Out: ${Var}") 
+      set(Var 2)
+      InFunc()
+      message("<- Out: ${Var}")
+    endfunction()
+    
+    
+    
+    set(Var 1)
+    message("-> Global ${Var}")
+    OutFunc()
+    message("<- Global ${Var}")
+    
+    
+    ```
+
+    这些输出会在build的时候显示,我们可以发现
+
+    * 尽管我们没有传入参数，在父域的参数任然可以访问
+    * 子域的参数修改不会影响父域
+
+    ![image-20240125150150888](./assets/image-20240125150150888.png)
+
+* 文件夹作用域: Directory scope
+
+  * 也就是说，如果我们执行`add_subdirectory()`来执行嵌套目录中的CMakeLists.txt列表文件，注意父CMakeLists.txt其中的变量可以被子CmakeLists.txt使用（继承了父文件的变量)
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 4.3.13 宏
+
+尽量不要写宏，因为宏会造成阅读困难，以及宏非常灵活，加大难度
+
+所以保证会读就行
+
+```cmake
+macro(<name> [<argument>...])
+	<commands>
+endmacro()
+```
+
+宏有一个很麻烦的灵活性
+
+在 CMake 的宏（`macro`）中，当传入的参数与全局变量同名时，您实际上不能直接修改传入的参数，但可以修改全局变量。==这是因为宏内部的参数名直接替换为了传入的实际值，而不是引用。==因此，两种情况——修改变量和输出参数——是分开的。下面是具体的解释：
+
+1. **修改变量**：
+   - 在宏内部使用 `set` 命令修改变量时，您实际上是在修改与宏参数同名的全局变量。
+   - 由于宏不创建新的作用域，因此任何在宏内部对变量的修改都是针对全局作用域的。
+2. **输出参数**：
+   - ==当在宏内部输出参数时，由于参数的文本替换特性，您实际上是在输出传递给宏的具体值。==
+   - 这意味着即使全局变量的值已被修改，`message` 命令仍然输出的是调用宏时传入的原始参数值。
+
+所以，当传入的参数与全局变量同名时，您实际上不能通过宏内部的操作来修改传入的参数值。相反，您修改的是同名的全局变量。这种行为可能会导致混淆，因此在使用宏时需要特别注意变量的作用域和命名。
+
+这就是下面例子中为什么宏内输出argument: value的原因，他们的改变和输出参数是分开的，这意味着当传入参数和全局参数同名时，你修改不了传入参数。
+
+```cmake
+cmake_minimum_required(VERSION 3.20.0)
+# 宏名 宏参数
+macro(Test myVar)
+  set(myVar "new value") # 这里是创建了一个新的myVar变量
+  message("argument: ${myVar}")
+endmacro()
+
+set(myVar "First value")
+message("myVar: ${myVar}")
+Test("value")
+message("myVar: ${myVar}")
+```
+
+
+
+![image-20240125152525437](./assets/image-20240125152525437.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -857,6 +994,405 @@ message("FirstArg After Function =  ${FirstArg}")
 
 ## 4.5 Cmake构建项目的四种方式
 
+### 4.5.0 生成器与编译器
+
+在软件构建过程中，"生成器"（Generator）和"编译器"（Compiler）是两个非常不同但又相互关联的概念。理解它们的区别对于软件开发和构建管理是很重要的。
+
+#### 生成器（Generator）
+
+1. **定义**：
+   - 生成器是一种工具，它根据预定义的配置和脚本（如 CMakeLists.txt 文件）生成特定的构建文件。
+   - 生成器不直接编译代码，而是生成可以由编译器和构建系统使用的文件（如 Makefiles、Visual Studio 解决方案文件等）。
+2. **用途**：
+   - 生成器用于创建适用于特定构建系统或开发环境的构建配置文件。
+   - 例如，CMake 是一个流行的跨平台构建系统，它可以生成多种不同生成器的构建文件。
+3. **示例**：
+   - 在 CMake 中，常见的生成器包括 "Unix Makefiles"、"Ninja"、"Visual Studio" 等。
+   - ==`cmake -G <generator-name>`==
+
+#### 编译器（Compiler）
+
+1. **定义**：
+
+   - 编译器是一种工具，它将源代码（如 C、C++、Java 等语言编写的代码）转换成机器代码或中间表示（如字节码）。
+   - 编译器通常执行语法分析、语义分析、代码优化和代码生成等任务。
+
+2. **用途**：
+
+   - 编译器的主要目的是将程序员编写的高级语言代码转换成可执行的程序。
+   - 编译器还负责代码优化，以提高程序的性能和效率。
+
+3. **示例**：
+
+   - 常见的 C/C++ 编译器包括 GCC（GNU Compiler Collection）、Clang、MSVC（Microsoft Visual C++）等。
+
+   - ==要更改 `cmake -B build` 命令使用的默认编译器==，您可以在 CMakeLists.txt 文件中设置编译器，或者在命令行上设置环境变量。以下是两种常见的方法：
+
+     ### 方法 1：使用 CMakeLists.txt 文件设置编译器
+
+     在 CMakeLists.txt 文件中，您可以通过设置 `CMAKE_C_COMPILER` 和 `CMAKE_CXX_COMPILER` 变量来指定 C 和 C++ 编译器。例如：
+
+     ```cmake
+     # 在 project 命令之前设置编译器
+     set(CMAKE_C_COMPILER "/path/to/gcc")
+     set(CMAKE_CXX_COMPILER "/path/to/g++")
+     project(YourProjectName)
+     ```
+
+     这里 `/path/to/gcc` 和 `/path/to/g++` 应该被替换为您系统上相应编译器的实际路径。
+
+     ### 方法 2：在命令行中设置环境变量
+
+     在命令行中，您可以通过设置 `CC` 和 `CXX` 环境变量来指定 C 和 C++ 编译器，然后运行 CMake：
+
+     ```bash
+     export CC=/path/to/gcc
+     export CXX=/path/to/g++
+     cmake -B build
+     ```
+
+     对于 Windows 系统，您可以使用类似的方法设置环境变量，但命令语法有所不同：
+
+     ```cmd
+     set CC=/path/to/gcc
+     set CXX=/path/to/g++
+     cmake -B build
+     ```
+
+#### 关系和区别
+
+- **关系**：生成器和编译器通常在软件构建过程中一起工作。生成器负责生成构建文件，这些文件定义了如何调用编译器以及其他构建工具来编译和链接源代码。
+- **区别**：生成器不进行编译操作；它们生成指导编译过程的文件。编译器则直接处理源代码，生成可执行文件或库。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 4.5.1 方法一：直接写入源码路径的方式
+
+适用于初学者，或者项目很小的情况。
+
+* 只需要在生成二进制可执行文件的命令`add_executable`中直接写入相对路径即可
+* 同时，在源码中引入头文件时也需要写相对路径
+
+
+
+
+
+
+
+
+
+
+
+在 CMake 中，`project(Animal CXX)` 这行代码指定了项目的名称以及支持的编程语言。
+
+- `Animal` 是项目的名称。
+- `CXX` 表示项目使用的编程语言是 C++。
+
+在 CMake 的 `project()` 命令中，您可以指定一个或多个编程语言。常见的编程语言标识符包括 `CXX`（C++）、`C`（C语言）、`Fortran` 等。当您指定 `CXX` 作为项目语言时，CMake 会为该项目配置 C++ 编译器。
+
+这个命令对项目进行初始化，并设置一些与项目相关的变量，例如 `CMAKE_PROJECT_NAME`。指定项目使用的语言对于 CMake 正确配置编译器和编译选项至关重要。如果您的项目同时使用多种语言，您可以在 `project()` 命令中一起指定它们，例如 `project(Animal CXX C)`。
+
+```cmake
+cmake_minimum_required(VERSION 3.20.0)
+
+project(Animal CXX)
+
+add_executable(Animal
+main.cpp
+animal/dog.cpp
+)
+```
+
+
+
+![image-20240125161851150](./assets/image-20240125161851150.png)
+
+![image-20240125161827931](./assets/image-20240125161827931.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 4.5.2 方法二：调用子目录cmake脚本
+
+* include方法可以引入子目录中的cmake后缀配置文件
+* 将配置加入到add_executable中
+
+![image-20240125163656399](./assets/image-20240125163656399.png)
+
+我们先在animal文件夹中加入.cmake局部文件
+
+```cmake
+set(animal_sources animal/dog.cpp animal/cat.cpp)
+```
+
+然后再CMakeLists.txt中include即可
+
+```cmake
+cmake_minimum_required(VERSION 3.20.0)
+
+project(Animal CXX)
+
+include(animal/animal.cmake)
+message(${animal_sources})
+add_executable(Animal
+main.cpp
+${animal_sources}
+)
+```
+
+![image-20240125163706774](./assets/image-20240125163706774.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 4.5.3 方法三：CMakeLists嵌套（最常见）
+
+所用到的命令
+
+* `target_include_directories`头文件目录的声明
+* `target_link_libraries` 连接库文件
+* `add_subdirectory` 添加子目录
+* `add_library` 生成库文件
+  * 默认STATIC library（静态库）
+
+
+
+`animal/CMakeLists.txt`
+
+```cmake
+add_library(AnimalLib cat.cpp dog.cpp)
+```
+
+* 添加库`add_library(AnimalLib cat.cpp dog.cpp)`
+
+  * 创建名为AnimalLib的库，由cat.cpp和dog.cpp编译得到
+
+  * `add_library` 命令用于定义和创建一个库（Library）。库是一组编译后的代码，可以被其他项目或可执行文件链接和重用。这个命令指示 CMake 如何将指定的源文件编译成库文件。
+
+  * ```cmake
+    add_library(<name> [STATIC | SHARED | MODULE] <source1> <source2> ... <sourceN>)
+    ```
+
+    - `<name>`: 库的名称。
+    - `STATIC`,`SHARED`,`MODULE`: 指定库的类型。
+      - `STATIC`：创建静态库（.a 或 .lib 文件）。静态库在链接时完整地复制到最终的可执行文件中。
+      - `SHARED`：创建共享库（.so, .dll 或 .dylib 文件）。共享库在运行时被动态链接，可以被多个程序共用。
+      - `MODULE`：创建一个模块库，主要用于插件，不会被链接到其他目标中，但可以在运行时动态加载。
+    - `<source1> <source2> ... <sourceN>`: 要编译进库的源文件列表。
+
+  * 
+
+`./CMakeLists.txt`
+
+```cmake
+cmake_minimum_required(VERSION 3.20.0)
+
+project(Animal CXX)
+
+add_subdirectory(animal)
+
+add_executable(Animal
+main.cpp
+
+)
+
+target_link_libraries(Animal PUBLIC AnimalLib)
+
+target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/animal")
+```
+
+
+
+* 添加子目录`add_subdirectory(animal)`:
+  * 告诉CMake查找并处理`animal`子文件夹下的CMakeLists.txt
+  * 通常，子目录包含了项目的一部分，这个机制有利于增加CMakeLists的自由度
+* 添加可执行文件`add_executable(Animal main.cpp)`
+  * 这行命令创建了一个名为Animal的可执行文件，是由main.cpp编译得到的
+* 链接库`target_link_libraries(Animal PUBLIC AnimalLib)`:
+  * 将AnimalLib库链接到Animal
+* 包含目录`target_include_directories(Animal PUBLIC "{PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/animal")`
+  * 设置了项目Animal的目标包含路径：
+    * `${PROJECT_BINARY_DIR}`是构建过程生成的文件所在的目录（即为build路径）
+    * `${PROJECT_SOURCE_DIR}/animal`:是源码中animal子目录路径
+  * ==这个命令指定了编译器在编译时查找头文件的路径==，因此我们的头文件可以不使用`# include "animal/dog.h"`而是直接用`#include "dog.h"`
+    * Animal：目标，为其指定所包含的目录
+    * PUBLIC: 这些目录应当在此目标及其依赖项中使用
+    * `"{PROJECT_BINARY_DIR}" `：build目录，如果你的源代码需要包含这些生成的文件，那么需要包含
+    * `"${PROJECT_SOURCE_DIR}/animal"`：AnimalLib的来源
+
+
+
+`Animal` 可执行文件依赖于 `AnimalLib` 库，因此在构建 `Animal` 时，CMake 会先构建 `AnimalLib` 库，然后将其链接到 `Animal` 可执行文件。通过这种方式，您可以将项目分解为可管理的部分，每部分具有自己的源文件和依赖关系。
+
+![image-20240125192126670](./assets/image-20240125192126670.png)
+
+
+
+> 在 C++ 项目中，有时源文件需要用到 CMake 构建时生成的文件，主要是为了引入一些在编译时才能确定的配置信息。这种做法使得源代码能够根据构建环境的不同自动调整其行为。以下是一个常见的例子：
+>
+> ### 示例：生成配置头文件
+>
+> 假设您的项目需要根据是否为调试模式来改变行为，或者需要知道项目的版本号。您可以在 CMake 中使用 `configure_file` 命令来根据配置生成一个头文件。
+>
+> 1. **创建一个配置文件模板**（例如 `Config.h.in`）：
+>
+>    ```cpp
+>    // Config.h.in
+>    #cmakedefine DEBUG_MODE
+>    #define VERSION @PROJECT_VERSION@
+>    ```
+>
+>    在这个模板中，`#cmakedefine DEBUG_MODE` 会根据 CMake 变量 `DEBUG_MODE` 的值被替换为 `#define DEBUG_MODE` 或注释掉。`@PROJECT_VERSION@` 是一个变量，会被替换为项目的版本号。
+>
+> 2. **在 CMakeLists.txt 中配置文件**：
+>
+>    ```cmake
+>    # 假设您已经设置了项目版本
+>    set(PROJECT_VERSION "1.0.0")
+>    
+>    # 可能基于某些条件设置 DEBUG_MODE
+>    if(CMAKE_BUILD_TYPE MATCHES Debug)
+>        set(DEBUG_MODE ON)
+>    endif()
+>    
+>    # 生成 Config.h
+>    configure_file(Config.h.in Config.h)
+>    ```
+>
+>    这段 CMake 脚本将创建一个 `Config.h` 文件，它是基于 `Config.h.in` 模板的，其中的变量被替换为实际值。
+>
+> 3. **在 C++ 源文件中使用生成的配置文件**：
+>
+>    ```cpp
+>    #include "Config.h"
+>    
+>    int main() {
+>        #ifdef DEBUG_MODE
+>            std::cout << "Debug Mode" << std::endl;
+>        #endif
+>        std::cout << "Version: " << VERSION << std::endl;
+>        return 0;
+>    }
+>    ```
+>
+>    在这个源文件中，`Config.h` 被包含，这意味着您的代码可以根据实际构建配置动态改变其行为。
+>
+> 这个例子展示了如何在 CMake 构建过程中生成配置文件，并且如何在 C++ 源代码中使用这些配置。这种技术尤其在大型项目或需要跨平台支持的项目中非常有用，因为它允许代码在不同环境下灵活适应。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -864,6 +1400,45 @@ message("FirstArg After Function =  ${FirstArg}")
 ## 4.6 静态库与动态库
 
 
+在 CMake 和 C++ 编程中，静态库、共享库和模块库是三种不同类型的库，而
+
+1. **静态库（Static Library）**：
+   - 静态库是一组编译过的代码，打包在一个单独的文件中（通常为 `.a` 或 `.lib`），在编译时整个库的内容被复制到最终的可执行文件中。
+   - 静态库的优点是所有代码都在一个可执行文件中，不需要额外的运行时依赖。缺点是每个使用静态库的应用都有一份库的副本，增加了可执行文件的大小。
+2. **共享库（Shared Library）**：
+   - 共享库是一个单独的文件（通常为 `.so`, `.dll` 或 `.dylib`），在运行时被加载和链接。多个程序可以共享同一个库文件，减少了重复。
+   - 共享库的优点是减少了内存占用和磁盘空间，因为同一库的单个副本可被多个程序使用。缺点是增加了运行时依赖和可能的版本冲突问题。
+3. **模块库（Module Library）**：
+   - 模块库通常用于插件，它们不直接链接到应用程序中，但可以在运行时动态加载。这对于可扩展的应用程序非常有用。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 4.7 `PRIVATE` 与`PUBLIC`
+
+ `PUBLIC` 和 `PRIVATE` 关键词用于指定链接和包含依赖的范围。
+
+在 CMake 中，`PUBLIC` 和 `PRIVATE` 关键词用于定义目标（如可执行文件或库）的依赖关系。
+
+1. **PUBLIC**：
+   - 表示链接或包含的依赖项在定义它的目标和使用该目标的其他目标中都是可见的。
+   - 例如，如果您为一个库设置了 `PUBLIC` 包含目录，那么链接这个库的任何其他目标也将拥有相同的包含目录。
+2. **PRIVATE**：
+   - 表示链接或包含的依赖项仅在定义它的目标中可见。
+   - 如果您为一个库设置了 `PRIVATE` 包含目录，那么这些目录只对这个库可见，链接这个库的其他目标不会继承这些包含目录。
+
+选择 `PUBLIC` 或 `PRIVATE` 取决于您的代码如何组织以及您希望如何暴露您的库或可执行文件的依赖。正确使用这些关键词有助于保持清晰的依赖关系和避免不必要的重编译。
 
 ## 4.7 Cmake与源文件交互
 

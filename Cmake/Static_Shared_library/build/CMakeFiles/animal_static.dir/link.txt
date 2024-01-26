@@ -1,0 +1,2 @@
+C:\mingw64\bin\ar.exe qc D:\Github-storage\StudyNotes\Cmake\Static_Shared_library\a\libanimal_static.a CMakeFiles/animal_static.dir/src/cat.cpp.obj CMakeFiles/animal_static.dir/src/dog.cpp.obj
+C:\mingw64\bin\ranlib.exe D:\Github-storage\StudyNotes\Cmake\Static_Shared_library\a\libanimal_static.a

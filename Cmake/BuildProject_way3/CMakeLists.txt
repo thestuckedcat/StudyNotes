@@ -2,10 +2,16 @@ cmake_minimum_required(VERSION 3.20.0)
 
 project(Animal CXX)
 
-include(animal/animal.cmake)
-message(${animal_sources})
+add_subdirectory(animal)
+
 add_executable(Animal
 main.cpp
-${animal_sources}
+
 )
+
+target_link_libraries(Animal PUBLIC AnimalLib)
+message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
+target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/animal")
+
+
 

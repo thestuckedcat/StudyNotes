@@ -1301,6 +1301,7 @@ target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOUR
 * 链接库`target_link_libraries(Animal PUBLIC AnimalLib)`:
   * 将AnimalLib库链接到Animal
 * 包含目录`target_include_directories(Animal PUBLIC "{PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/animal")`
+  * ==上一步只是链接库，你还需要让cmake知道库该去哪里找，也就是include path，指定头文件位置==
   * 设置了项目Animal的目标包含路径：
     * `${PROJECT_BINARY_DIR}`是构建过程生成的文件所在的目录（即为build路径）
     * `${PROJECT_SOURCE_DIR}/animal`:是源码中animal子目录路径
@@ -1309,6 +1310,7 @@ target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOUR
     * PUBLIC: 这些目录应当在此目标及其依赖项中使用
     * `"{PROJECT_BINARY_DIR}" `：build目录，如果你的源代码需要包含这些生成的文件，那么需要包含
     * `"${PROJECT_SOURCE_DIR}/animal"`：AnimalLib的来源
+  
 
 
 
@@ -1355,7 +1357,7 @@ target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOUR
 >
 >    ```cpp
 >    #include "Config.h"
->    
+>       
 >    int main() {
 >        #ifdef DEBUG_MODE
 >            std::cout << "Debug Mode" << std::endl;
@@ -1371,6 +1373,9 @@ target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOUR
 
 
 
+需要注意的是，用这种方法添加的animal库，会build出来一个静态库
+
+![image-20240126151125104](./assets/image-20240126151125104.png)
 
 
 
@@ -1396,26 +1401,343 @@ target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOUR
 
 
 
+## 4.6 Cmake中的库
 
-## 4.6 静态库与动态库
+### 4.6.1 Object Libraries(最低版本3.12)
+
+`OBJECT` 库将源文件编译为对象文件，但不会将它们归档为实际的库文件（如 `.a`、`.lib`、`.so` 等）。
+
+所以，它实际上是一个可执行文件的集合。**当有多个目标（如多个可执行文件或库）需要使用相同的对象文件时，`OBJECT` 库避免了重复编译，减少了总体构建时间。**
+
+```cmake
+add_library(my_object_lib OBJECT source1.cpp source2.cpp)
+```
+
+```cmake
+# ./animal/CMakeLists.txt
+add_library(AnimalLib OBJECT cat.cpp dog.cpp)
+
+target_include_directories(AnimalLib PUBLIC .)
 
 
-在 CMake 和 C++ 编程中，静态库、共享库和模块库是三种不同类型的库，而
+# ./CMakeLists.txt
+cmake_minimum_required(VERSION 3.20.0)
+
+project(Animal CXX)
+
+add_subdirectory(animal)
+
+add_executable(Animal main.cpp)
+
+target_link_libraries(Animal PUBLIC AnimalLib)
+#message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
+#target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/animal")
+```
+
+我们需要注意，`target_link_libraries`是将某些路径与项目名相关联的，这里将`target_link_directories`写在子目录的CMakeLists内部，然后将当前目录"animal"与项目Animal关联，这种排布方式适用于大型项目，每个子模块单独来include，与在全局添`加"${PROJECT_SOURCE_DIR}/animal"`效果是一致的。
+
+
+
+
+
+build后我们可以发现，这种方法构建出来的build并没有上面一节中的库文件
+
+![image-20240126151217891](./assets/image-20240126151217891.png)
+
+
+
+
+
+
+
+另外一种方法是分开编译
+
+```cmake
+# ./animal/CMakeLists.txt
+add_library(catlib OBJECT cat.cpp)
+
+target_include_directories(catlib PUBLIC .)
+
+
+add_library(doglib OBJECT dog.cpp)
+
+target_include_directories(doglib PUBLIC .)
+
+
+# ./CMakeLists.txt
+cmake_minimum_required(VERSION 3.20.0)
+
+project(Animal CXX)
+
+add_subdirectory(animal)
+
+add_executable(Animal main.cpp)
+
+target_link_libraries(Animal PUBLIC catlib doglib)
+```
+
+这种方法就生成了两个目录`catlib.dir`,`doglib.dir`，这个的好处是细粒化了library，在以后条件编译中能够避免编译不需要编译的文件。
+
+
+
+
+
+
+
+
+
+### 4.6.2 动态库与静态库
+
+在 CMake 和 C++ 编程中，静态库是两个很重要的库，通常来说add_library命令默认创建静态库，若是使用
+
+```cmake
+set(BUILD_SHARED_LIBS ON)
+add_library(my_library source.cpp)
+```
+
+那么此时默认就是动态库。
+
+
 
 1. **静态库（Static Library）**：
+
+   * 在链接阶段，将汇编生成的目标文件.o与所**引用到的库**一起链接打包到可执行文件中。因此，对应的链接方式称为静态链接。
+   * ==其对函数库的连接是在编译时完成的==
+
    - 静态库是一组编译过的代码，打包在一个单独的文件中（通常为 `.a` 或 `.lib`），在编译时整个库的内容被复制到最终的可执行文件中。
-   - 静态库的优点是所有代码都在一个可执行文件中，不需要额外的运行时依赖。缺点是每个使用静态库的应用都有一份库的副本，增加了可执行文件的大小。
-2. **共享库（Shared Library）**：
-   - 共享库是一个单独的文件（通常为 `.so`, `.dll` 或 `.dylib`），在运行时被加载和链接。多个程序可以共享同一个库文件，减少了重复。
-   - 共享库的优点是减少了内存占用和磁盘空间，因为同一库的单个副本可被多个程序使用。缺点是增加了运行时依赖和可能的版本冲突问题。
-3. **模块库（Module Library）**：
-   - 模块库通常用于插件，它们不直接链接到应用程序中，但可以在运行时动态加载。这对于可扩展的应用程序非常有用。
+   - 静态库的优点是所有代码都在一个可执行文件中，不需要额外的运行时依赖。缺点是**每个使用静态库的应用都有一份库的副本**，增加了可执行文件的大小。
+   - 静态库的命名:`lib<name>.a, lib<name>.lib`，在linux中为.a,在windows中为.lib
+
+2. **动态库(Dynamic Library)/共享库(shared library)**：
+
+   * 动态库不是在编译时被连接到目标代码中，而是运行时才被载入的。因为静态库对空间的浪费太大了。
+   * 动态库的命名：`lib<name>.so,lib<name.dll`，在linux中是.so，在windows中是.dll
+
+
+
+常用命令
+
+```cmake
+file() # 用于搜索源文件
+
+# 生成静态库
+add_library(animal STATIC ${SRC})
+# 生成动态库
+add_library(animal SHARED ${SRC})
+
+${LIBRARY_OUTPUT_PATH} # 导出目录
+```
+
+
+
+
+
+首先我们优化一下布局，a装静态库，src装.cpp实现，include装头文件
+
+![image-20240126163844075](./assets/image-20240126163844075.png)
+
+#### 创立静态库
+
+```cmake
+cmake_minimum_required(VERSION 3.20.0)
+# 该CMakeLists主要是生成库
+project(Animal CXX)
+
+# add_subdirectory(animal)
+
+# 不是生成可执行文件
+# add_executable(Animal main.cpp)
+
+# target_link_libraries(Animal PUBLIC AnimalLib)
+# message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
+# target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/animal")
+
+# 将所有Cpp文件加入SRC变量
+file(GLOB SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
+
+include_directories((${PROJECT_SOURCE_DIR}/include))
+
+# 设置输出的library的路径（根目录下的a文件夹）
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/a)
+add_library(animal_static STATIC ${SRC})
+
+```
+
+* `GLOB` 指令告诉 CMake 执行文件的全局搜索（globbing），即根据指定的模式匹配文件名。
+
+其余的还有
+
+* `GLOB_RECURSE`：递归地搜索匹配的文件，包括所有子目录。
+* `COPY`：复制文件。
+* `RENAME`：重命名文件。
+* `REMOVE`：删除文件。
+* `WRITE`：向文件写内容。
+* `READ`：读取文件内容。
+
+![image-20240126163924406](./assets/image-20240126163924406.png)
+
+
+
+![image-20240126163945122](./assets/image-20240126163945122.png)
 
 
 
 
 
 
+
+
+
+#### 生成动态库
+
+这里我们只生成动态库，考虑到LIBRARY_OUTPUT_PATH是全局输出，因此不能同时输出动态库和静态库到两个不同的文件夹。
+
+```cmake
+# 生成动态库
+
+file(GLOB SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
+
+include_directories((${PROJECT_SOURCE_DIR}/include))
+
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/so)
+add_library(animal_shared SHARED ${SRC})
+
+
+```
+
+![image-20240126171150546](./assets/image-20240126171150546.png)
+
+
+
+==动态库是可以执行的，但是静态库是不可以执行的==
+
+某些操作系统（如 Linux）允许动态库作为可执行文件。这是因为动态库可以包含一个入口点（但这并不常见）。通常，动态库用于在运行时被其他可执行文件调用。
+
+动态库有时可以是可执行的，这取决于它们是如何被构建的。在某些情况下，动态库可以包含一个入口点，使其能够像普通的可执行文件一样运行。这通常是通过在动态库中定义一个可以被操作系统识别的特殊符号（如 `main` 函数）来实现的。然而，这并非动态库的典型或建议用途。
+
+
+
+
+
+
+
+
+
+
+
+#### 静态库调用流程
+
+* 引入头文件
+* 连接静态库
+* 生成可执行二进制文件
+
+![image-20240126195528403](./assets/image-20240126195528403.png)
+
+```cmake
+cmake_minimum_required(VERSION 3.20.0)
+
+project(Animal CXX)
+
+# 引入头文件
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+
+# 添加静态库目录
+link_directories(${PROJECT_SOURCE_DIR}/a)
+# 连接静态库
+link_libraries(animal_static)
+
+
+add_executable(app main.cpp)
+
+```
+
+这里注意，我们之前创建静态库的时候就是名称为animal_static，它会自动命名乘`lib<name>.a`，我们在lin_libraries时仍然需要的是我们旧的`<name>`
+
+![image-20240126195704613](./assets/image-20240126195704613.png)
+
+
+
+
+
+#### 动态库调用流程
+
+* 引入头文件
+* 声明库目录
+* 生成可执行二进制文件
+* 连接动态库（==运行时连接==）
+
+
+
+
+
+```cmake
+cmake_minimum_required(VERSION 3.20.0)
+
+project(Animal CXX)
+
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+link_directories(${PROJECT_SOURCE_DIR}/so)
+add_executable(app main.cpp)
+target_link_libraries(app PUBLIC animal_shared)
+```
+
+注意，在windows中，动态库在执行时是需要和可执行文件在同一个文件夹中的。复制过去就行。
+
+这也就是为什么windows中
+
+```cmake
+file(GLOB SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
+
+include_directories((${PROJECT_SOURCE_DIR}/include))
+
+# 静态库
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/a)
+add_library(animal_static STATIC ${SRC})
+# 动态库
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/so)
+add_library(animal_shared SHARED ${SRC})
+```
+
+这么写之后，静态库存在a而动态库直接存在build。
+
+
+
+> 在 CMake 中，`link_directories` 和 `link_libraries` 有特定的用途，它们与 `target_link_libraries` 的行为有所不同。让我们分别来看看这些命令的作用和使用场景。
+>
+> ### link_directories
+>
+> - `link_directories` 命令用于指定链接器搜索库文件时应查找的目录。这个命令影响所有在其之后声明的目标。
+>
+> - 例：
+>
+>   ```cmake
+>   link_directories(${PROJECT_SOURCE_DIR}/so)
+>   ```
+>
+> ### link_libraries
+>
+> - `link_libraries` 用于为之后定义的所有目标设置链接库。它是一种全局设置，会影响所有后续定义的目标。
+> - 问题：`link_libraries` 的使用可能会导致不必要的全局影响，使得项目难以维护，特别是在大型或复杂的项目中。
+>
+> ### target_link_libraries
+>
+> - `target_link_libraries` 是更推荐的做法，它用于为特定目标（例如可执行文件或库）指定链接库。这样可以更精确地控制每个目标的链接行为。
+>
+> - 例：
+>
+>   ```cmake
+>   add_executable(app main.cpp)
+>   target_link_libraries(app PUBLIC animal_shared)
+>   ```
+>
+> 在这个例子中，`target_link_libraries(app PUBLIC animal_shared)` 命令精确地指定了 `app` 可执行文件应该链接 `animal_shared` 库。
+>
+> ### 为什么推荐 target_link_libraries
+>
+> - **精确性**：`target_link_libraries` 允许您为每个特定目标定义链接库，避免全局设置可能引起的混淆和错误。
+> - **可维护性**：在大型项目中，使用 `target_link_libraries` 可以更容易地追踪每个目标的依赖，使项目更加模块化和可维护。
 
 
 

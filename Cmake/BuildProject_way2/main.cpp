@@ -1,6 +1,6 @@
 # include<iostream>
-# include "dog.h"
-# include "cat.h"
+# include "animal/dog.h"
+# include "animal/cat.h"
 int main(int argc, char const *argv[]){
 
   Dog dog;

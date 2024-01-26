@@ -1,0 +1,3 @@
+D:/Github-storage/StudyNotes/Cmake/Static_Shared_library/build/CMakeFiles/animal_static.dir
+D:/Github-storage/StudyNotes/Cmake/Static_Shared_library/build/CMakeFiles/edit_cache.dir
+D:/Github-storage/StudyNotes/Cmake/Static_Shared_library/build/CMakeFiles/rebuild_cache.dir

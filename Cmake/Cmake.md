@@ -1357,7 +1357,7 @@ target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOUR
 >
 >    ```cpp
 >    #include "Config.h"
->       
+>          
 >    int main() {
 >        #ifdef DEBUG_MODE
 >            std::cout << "Debug Mode" << std::endl;
@@ -1749,6 +1749,8 @@ add_library(animal_shared SHARED ${SRC})
 
 ## 4.7 `PRIVATE` 与`PUBLIC`
 
+<img src="./assets/image-20240127144037901.png" alt="image-20240127144037901" style="zoom:150%;" />
+
  `PUBLIC` 和 `PRIVATE` 关键词用于指定链接和包含依赖的范围。
 
 在 CMake 中，`PUBLIC` 和 `PRIVATE` 关键词用于定义目标（如可执行文件或库）的依赖关系。
@@ -1762,7 +1764,170 @@ add_library(animal_shared SHARED ${SRC})
 
 选择 `PUBLIC` 或 `PRIVATE` 取决于您的代码如何组织以及您希望如何暴露您的库或可执行文件的依赖。正确使用这些关键词有助于保持清晰的依赖关系和避免不必要的重编译。
 
+
+
+
+
+### 例子讲解
+
+在 CMake 中，`PRIVATE` 和 `PUBLIC` 关键字用于指定目标（如库或可执行文件）的依赖范围和传播规则。这些关键字通常与 `target_link_libraries`、`target_include_directories`、`target_compile_definitions` 等命令一起使用，以控制链接、包含路径和编译定义的行为。
+
+下面通过例子详细介绍 `PRIVATE` 和 `PUBLIC` 的用法：
+
+#### 1. `target_link_libraries`
+
+假设我们有一个库 `mylib` 和一个可执行文件 `myapp`：
+
+```cmake
+add_library(mylib STATIC mylib.cpp)
+add_executable(myapp main.cpp)
+```
+
+##### 使用 `PRIVATE`：
+
+```cmake
+target_link_libraries(mylib PRIVATE some_other_lib)
+```
+
+- 在这个例子中，`mylib` 链接了 `some_other_lib`。
+- `PRIVATE` 表示 `some_other_lib` 只对 `mylib` 内部使用，`mylib` 的使用者（比如链接 `mylib` 的其他库或可执行文件）不会自动链接 `some_other_lib`。
+
+##### 使用 `PUBLIC`：
+
+```cmake
+target_link_libraries(mylib PUBLIC some_other_lib)
+```
+
+- 在这个例子中，`mylib` 链接了 `some_other_lib`。
+- `PUBLIC` 表示 `some_other_lib` 不仅对 `mylib` 内部使用，而且 `mylib` 的使用者也会自动链接 `some_other_lib`。换句话说，`some_other_lib` 的链接需求被传播给链接 `mylib` 的任何目标。
+
+#### 2. `target_include_directories`
+
+假设我们希望为 `mylib` 指定包含目录：
+
+##### 使用 `PRIVATE`：
+
+```cmake
+target_include_directories(mylib PRIVATE /path/to/includes)
+```
+
+- `mylib` 可以访问 `/path/to/includes` 中的头文件。
+- 这些头文件仅对 `mylib` 的实现文件可见，对链接 `mylib` 的其他目标不可见。
+
+##### 使用 `PUBLIC`：
+
+```cmake
+target_include_directories(mylib PUBLIC /path/to/includes)
+```
+
+- `mylib` 可以访问 `/path/to/includes` 中的头文件。
+- 这些头文件不仅对 `mylib` 的实现文件可见，还对链接 `mylib` 的任何目标可见。
+
+#### 总结
+
+- **PRIVATE**：依赖项或属性仅对定义它们的目标内部可见。不会传播给该目标的使用者。
+- **PUBLIC**：依赖项或属性对定义它们的目标和使用该目标的其他目标可见。会传播给使用该目标的其他目标。
+
+
+
+
+
+
+
+
+
+
+
 ## 4.7 Cmake与源文件交互
+
+简单来说就是使用源文件来输出Cmake的参数
+
+我们需要引入config.h.in在编译后生成一个config头文件，然后我们cpp源文件提前引用这个config头文件使用其定义。
+
+![image-20240127140503987](./assets/image-20240127140503987.png)
+
+```cmake
+# ./CMakeLists.txt
+cmake_minimum_required(VERSION 3.20.0)
+
+# 设置c++标准，设置为20
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+
+# config
+configure_file(config.h.in config.h)
+
+
+# 创建project
+project(Animal CXX)
+
+add_subdirectory(animal)
+
+add_executable(Animal
+main.cpp
+
+)
+
+target_link_libraries(Animal PUBLIC AnimalLib)
+message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
+
+# 这里包含了animal的头文件目录以及config.h.in生成的config.h的目录PROJECT_BINARY_DIR
+target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/animal")
+
+```
+
+```c++
+//config.h
+// 用于生成config.h文件，
+
+// 例如利用宏获取CMAKE变量
+#define CMAKE_CXX_STANDARD ${CMAKE_CXX_STANDARD}
+```
+
+```c++
+//main.cpp,添加了对当前C++的版本输出
+# include<iostream>
+# include "dog.h"
+# include "cat.h"
+# include "config.h"
+int main(int argc, char const *argv[]){
+
+  Dog dog;
+  Cat cat;
+  std::cout << dog.barking() << std::endl;
+  std::cout << cat.barking() << std::endl;
+
+  // 使用config的定义
+  std::cout << CMAKE_CXX_STANDARD<<std::endl;
+  return 0;
+}
+```
+
+![image-20240127140449033](./assets/image-20240127140449033.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1770,9 +1935,129 @@ add_library(animal_shared SHARED ${SRC})
 
 
 
+Cmake条件编译指的是通过不同传入参数编译不同的文件
+
+* 用`option`定义变量
+
+* 在**==子==CMakeLists.txt**（最好是在子文件中方便管理）中根据变量ON还是OFF来修改SRC源文件以及`target_compile_definitions`
+
+* 修改源文件根据变量选择代码
+
+* 执行命令来进行条件编译
+
+  ```bash
+  -D <variable>=ON/OFF
+  ```
 
 
 
 
 
+![image-20240127144030148](./assets/image-20240127144030148.png)
 
+
+
+
+
+`option`命令
+
+```cmake
+option(<variable> "<description>" [initial value])
+```
+
+
+
+
+
+`target_compile_definitions`
+
+```cmake
+target_compile_definitions(<targetLib>
+  <INTERFACE|PUBLIC|PRIVATE> [items1...]
+  [<INTERFACE|PUBLIC|PRIVATE> [items2...] ...])
+
+```
+
+
+
+`target_compile_definitions` 是 CMake 中的一个命令，用于为特定的构建目标（如库或可执行文件）添加编译器定义。==这些定义在编译时作为宏传递给预处理器，允许您在源代码中通过预处理指令（如 `#ifdef`、`#ifndef`、`#if`）条件性地编译代码。==
+
+
+
+
+
+```cmake
+#./animal/CMakeLists.txt
+
+option(USE_CATTWO "Use cat two" ON)
+
+if(USE_CATTWO)
+  set(SRC cat.cpp dog.cpp cattwo.cpp)
+else()
+  set(SRC cat.cpp dog.cpp)
+endif()
+
+
+
+add_library(AnimalLib ${SRC})
+
+if(USE_CATTWO)
+  target_compile_definitions(AnimalLib PRIVATE "USE_CATTWO")
+endif()
+```
+
+我们修改cat.cpp的bark为条件执行本来的bark还是cattwo的bark
+
+```c++
+// cat.h
+#pragma once
+# include<string>
+class Cat{
+public:
+  std::string barking();
+};
+
+// cat.cpp
+# include "cat.h"
+
+#ifdef USE_CATTWO
+  # include "cattwo.h"
+#endif
+
+
+
+std::string Cat::barking(){
+    #ifdef USE_CATTWO
+        return cattwo::two();
+    #else
+        return "mewo mewo";
+    #endif
+  }
+
+// cattwo.h
+# include<string>
+
+namespace cattwo{
+  std::string two();
+}
+
+// cattwo.cpp
+# include<string>
+# include "cattwo.h"
+
+std::string cattwo::two(){
+    return "mewo two";
+  }
+```
+
+注意，因为是条件编译，所以build不共享，你想要另一个条件的就需要删掉build重新build
+
+默认是USE_CATTWO = ON
+
+![image-20240127153755563](./assets/image-20240127153755563.png)
+
+修改为USE_CATTWO = OFF
+
+![image-20240127153846156](./assets/image-20240127153846156.png)
+
+![image-20240127153903338](./assets/image-20240127153903338.png)

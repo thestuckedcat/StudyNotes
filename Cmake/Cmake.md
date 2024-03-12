@@ -1357,7 +1357,7 @@ target_include_directories(Animal PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOUR
 >
 >    ```cpp
 >    #include "Config.h"
->          
+>             
 >    int main() {
 >        #ifdef DEBUG_MODE
 >            std::cout << "Debug Mode" << std::endl;

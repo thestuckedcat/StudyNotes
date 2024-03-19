@@ -5,3 +5,7 @@
 *.cubin
 *.fatbin
 *.ipch
+*.csv
+*.txt
+*.zip
+*.7z

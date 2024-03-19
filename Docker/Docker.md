@@ -1,3 +1,131 @@
+# -1. 使用docker作为tensorflow环境
+
+1. **下载TensorFlow Docker镜像：**
+
+   - 打开命令行界面，可以是Windows命令提示符、PowerShell或者WSL 2的Linux终端。
+
+   - 拉取支持GPU的TensorFlow Docker镜像：
+
+     ```bash
+     docker pull tensorflow/tensorflow:latest-gpu-jupyter
+     ```
+
+2. **运行TensorFlow Jupyter Notebook容器：**
+
+   - 使用以下命令启动一个支持GPU的TensorFlow Jupyter Notebook Docker容器。请注意，你需要将`<local-notebooks-dir>`替换为你希望挂载到容器中的本地目录路径，这样你就可以直接在本地编辑Notebook文件：
+
+     ```bash
+     docker run --gpus all -it -p 8888:8888 -v "<local-notebooks-dir>:/tf/notebooks" tensorflow/tensorflow:latest-gpu-jupyter
+     ```
+
+   - 这条命令做了几件事：
+
+     - `--gpus all` 使容器能够访问GPU。
+     - `-p 8888:8888` 将容器的8888端口映射到本地的8888端口，Jupyter Notebook默认使用这个端口。
+     - `-v <local-notebooks-dir>:/tf/notebooks` 将你的本地目录（`<local-notebooks-dir>`）挂载到容器中的`/tf/notebooks`目录，这样你可以直接在本地和容器之间共享Notebook文件。
+
+3. **访问Jupyter Notebook：**
+
+   - 容器启动后，终端会显示一个URL，其中包含用于访问Jupyter Notebook的token。复制并粘贴这个URL到你的浏览器地址栏中即可开始使用TensorFlow和GPU来运行你的Jupyter Notebooks。
+
+![image-20240316190447688](./assets/image-20240316190447688.png)
+
+![image-20240316190503689](./assets/image-20240316190503689.png)
+
+**创建自定义Docker镜像**
+
+这是一个更持久化的解决方案，你可以在TensorFlow Jupyter Notebook的基础上创建一个自定义Docker镜像，其中包含了你需要的所有额外库。
+
+1. **创建Dockerfile**：创建一个Dockerfile来定义你的自定义镜像。首先，从原始的TensorFlow镜像开始，然后使用`RUN`指令来安装任何额外的库。例如：
+
+   ```dockerfile
+   FROM tensorflow/tensorflow:latest-gpu-jupyter
+   # 安装你需要的库
+   RUN pip install numpy pandas matplotlib
+   ```
+
+   替换`numpy pandas matplotlib`为你需要安装的库。
+
+2. **构建你的Docker镜像**：在Dockerfile所在的目录下，运行以下命令来构建你的镜像：
+
+   ```bash
+   docker build -t my-tensorflow-notebook .
+   ```
+
+   这里，`-t my-tensorflow-notebook`选项为你的新镜像指定了一个名称和标签（`.`指定Docker应该在当前目录下查找Dockerfile。
+
+3. **运行你的自定义镜像**：现在你可以像之前那样运行你的镜像，只不过要使用新的镜像名称：
+
+   ```bash
+   docker run --gpus all -p 8888:8888 -v "C:\path\to\your\notebooks\folder:/tf/notebooks" my-tensorflow-notebook
+   ```
+
+这种方法的好处是，你只需要构建镜像一次，以后每次运行容器时都会自动包含你安装的所有库，不需要每次都重新安装。
+
+
+
+# -2. 分享docker Image
+
+
+如果你想把你创建的Docker镜像分享给别人，你有几种方法可以选择：
+
+### 1. 推送到Docker Hub或其他容器镜像仓库
+
+最常见的方法是将你的Docker镜像推送到Docker Hub或其他公共或私有的容器镜像仓库，如GitHub Packages或Amazon ECR等。这样，其他人可以直接从仓库中拉取你的镜像。
+
+#### 步骤概览：
+
+1. **创建一个Docker Hub账户**（如果你还没有的话）并创建一个新的仓库。
+
+2. 标记你的镜像，以匹配仓库的格式：
+
+   ```
+   bashCopy code
+   docker tag tensorflow-transformers:latest yourdockerhubusername/tensorflow-transformers:latest
+   ```
+
+   这里，`yourdockerhubusername`是你的Docker Hub用户名，`tensorflow-transformers:latest`是你想要推送的镜像名称和标签。
+
+3. 登录到Docker Hub：`docker login`
+
+4. 推送镜像到Docker Hub
+
+   ```bash
+   docker push yourdockerhubusername/tensorflow-transformers:latest
+   ```
+
+5. 分享你的镜像。现在你可以告诉别人去Docker Hub上拉取你的镜像了，使用如下命令：
+
+   ```bash
+   docker pull yourdockerhubusername/tensorflow-transformers:latest
+   ```
+
+### 2. 保存为tar文件并分享
+
+如果你不想使用Docker Hub或其他在线服务，你也可以将Docker镜像保存为一个tar文件，然后通过网络共享服务（如Dropbox、Google Drive等）或物理介质（如USB驱动器）分享这个文件。
+
+#### 步骤概览：
+
+1. 保存镜像为tar文件
+
+   ```bash
+   docker save tensorflow-transformers:latest > tensorflow-transformers.tar
+   ```
+
+2. **分享这个tar文件**给需要的人。
+
+3. 接收方可以通过以下命令
+
+   加载镜像
+
+   ```bash
+   docker load < tensorflow-transformers.tar
+   ```
+
+选择哪种方法取决于你的具体需求和偏好。对于广泛的分享和容易的访问，使用Docker Hub或其他容器镜像仓库是更便捷的方法。如果你只需要偶尔分享给少数人，或者你想要一个不依赖互联网的解决方案，保存为tar文件并分享可能更适合。
+
+
+
 # 0. What is Docker
 
 Docker是一种容器技术(A tool for creating and managing containers)
@@ -36,9 +164,14 @@ Docker拥有一个轻量级的操作系统以及一个Docker Engine，这使得�
 
   * Docker为Linux22.04即以上版本推出了其desktop，考虑到我的环境仍然为20.04，因此使用Docker Engine
 
+* 为Windows安装：Desktop即可，注意需要在powershell中开启Hyper-V,另外不需要nvidia container toolkit
+
+  ```bash
+  Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+  Enable-WindowsOptionalFeature -Online -FeatureName containers -Al
+  ```
   
-
-
+  
 
 
 
@@ -222,6 +355,7 @@ https://www.tensorflow.org/install/docker?hl=zh-cn
   docker run --gpus all -it --rm tensorflow/tensorflow:2.10.1-gpu-jupyter\   python -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 1000])))"
   ```
   
+
 如果成功输出代表环境这块没问题。
 
 
@@ -392,10 +526,10 @@ Dockerfile编辑完毕后，我们进入对应文件夹使用`sudo docker build`
 >   ```dockerfile
 >   # 使用官方 Python 镜像作为基础镜像
 >   FROM python:3.8
->         
+>                 
 >   # 安装 Flask
 >   RUN pip install flask
->         
+>                 
 >   # 其他指令...
 >   ```
 >
@@ -430,7 +564,9 @@ Dockerfile编辑完毕后，我们进入对应文件夹使用`sudo docker build`
 
 `docker stop Imagename`关闭容器
 
+停止容器后，容器的状态会变为停止状态（Stopped）。停止状态的容器仍然存在于系统中，你可以查看它的日志，检查它的配置，甚至可以重新启动它。容器的文件系统也会保留在停止时的状态，这意味着当你重新启动容器时，任何写入到容器文件系统中的数据都会保留下来。
 
+如果你想要移除容器，释放占用的资源，可以使用`docker rm`命令来删除停止状态的容器。需要注意的是，一旦容器被删除，与该容器相关的文件系统和数据也会被删除（除非你特别配置了卷来持久化数据），并且无法恢复。
 
 
 

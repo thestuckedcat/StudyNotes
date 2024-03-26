@@ -50,6 +50,10 @@ do {                                                    \
 } while (0)
 
 
+
+
+const int array_size = std::numeric_limits<int>::max()/2;//-1太容易出现问题了，例如循环溢出
+
 void check_result(int* device_num, int* device_result, int* cpu_num, int* cpu_result) {
 	if (*device_num != *cpu_num) {
 		std::cout << "Device result is something wrong with cpu_result" << std::endl;
@@ -72,12 +76,7 @@ void check_result(int* device_num, int* device_result, int* cpu_num, int* cpu_re
 	}
 }
 
-void compare1() {
-	/*
-	CPU vs original GPU copy_if
-	*/
-	const int array_size = 8192000;
-
+int* generate_random_array() {
 	int* src = new int[array_size];
 
 
@@ -88,7 +87,13 @@ void compare1() {
 		src[i] = distrib(gen);
 		//std::cout << src[i] << " ";
 	}
+	return src;
+}
 
+void compare1(int* src) {
+	/*
+	CPU vs original GPU copy_if
+	*/
 	int* res = new int[array_size];
 
 	int resnum;
@@ -107,7 +112,7 @@ void compare1() {
 	CHECK(cudaMemcpy(device_src, src, array_size * sizeof(int), cudaMemcpyHostToDevice));
 	
 	auto kernel_launcher = [&](){
-		origin_copy_if << < 128, 512 >> >(device_result1, device_src, nres1, array_size);
+		origin_copy_if << < 512,1024 >> >(device_result1, device_src, nres1, array_size);
 	};
 
 	TIME_GPU(kernel_launcher);
@@ -124,25 +129,12 @@ void compare1() {
 	free(host_result1);
 	free(host_nres1);
 	free(res);
-	free(src);
 }
 
-void compare2() {
+void compare2(int* src) {
 	/*
 	CPU vs original GPU copy_if
 	*/
-	const int array_size = 8192000;
-
-	int* src = new int[array_size];
-
-
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> distrib(-100, 100);
-	for (int i = 0; i < array_size; i++) {
-		src[i] = distrib(gen);
-		//std::cout << src[i] << " ";
-	}
 
 	int* res = new int[array_size];
 
@@ -162,7 +154,7 @@ void compare2() {
 	CHECK(cudaMemcpy(device_src, src, array_size * sizeof(int), cudaMemcpyHostToDevice));
 
 	auto kernel_launcher = [&]() {
-		blocklevel_copy_if << < 128,512 >> > (device_result1, device_src, nres1, array_size);
+		blocklevel_copy_if << < 512,1024 >> > (device_result1, device_src, nres1, array_size);
 		};
 
 	TIME_GPU(kernel_launcher);
@@ -179,14 +171,57 @@ void compare2() {
 	free(host_result1);
 	free(host_nres1);
 	free(res);
-	free(src);
+}
+
+void compare3(int* src) {
+	/*
+	CPU vs original GPU copy_if
+	*/
+
+	int* res = new int[array_size];
+
+	int resnum;
+	TIME_CPU(resnum = cpu_copy_if(res, src, array_size));
+
+
+	int* host_result1 = (int*)malloc(array_size * sizeof(int));
+	int* host_nres1 = (int*)malloc(sizeof(int));
+	int* device_src;
+	int* device_result1;
+	int* nres1;
+	CHECK(cudaMalloc((void**)&device_src, array_size * sizeof(int)));
+	CHECK(cudaMalloc((void**)&device_result1, array_size * sizeof(int)));
+	CHECK(cudaMalloc((void**)&nres1, sizeof(int)));
+
+	CHECK(cudaMemcpy(device_src, src, array_size * sizeof(int), cudaMemcpyHostToDevice));
+
+	auto kernel_launcher = [&]() {
+		warplevel_copy_if << < 512,1024 >> > (device_result1, device_src, nres1, array_size);
+		};
+
+	TIME_GPU(kernel_launcher);
+
+	CHECK(cudaMemcpy(host_result1, device_result1, sizeof(int) * array_size, cudaMemcpyDeviceToHost));
+	CHECK(cudaMemcpy(host_nres1, nres1, sizeof(int), cudaMemcpyDeviceToHost));
+
+
+	check_result(host_nres1, host_result1, &resnum, res);
+
+	cudaFree(device_src);
+	cudaFree(device_result1);
+	cudaFree(nres1);
+	free(host_result1);
+	free(host_nres1);
+	free(res);
 }
 
 int main()
 {
-	compare1();
-	compare2();
-
+	int* src = generate_random_array();
+	compare1(src);
+	compare2(src);
+	compare3(src);
+	delete[] src;
 
 
 

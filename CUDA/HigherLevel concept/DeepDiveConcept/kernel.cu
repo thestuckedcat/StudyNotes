@@ -6,6 +6,7 @@
 # include<random>
 # include<iostream>
 # include<chrono>
+# include "cublas_example.h"
 #define CHECK(call)                                   \
 do                                                    \
 {                                                     \
@@ -215,14 +216,20 @@ void compare3(int* src) {
 	free(res);
 }
 
+
 int main()
-{
+{	
+	/*
+	// copy_if example
 	int* src = generate_random_array();
 	compare1(src);
 	compare2(src);
 	compare3(src);
 	delete[] src;
+	*/
 
-
+	//cublas example
+	int result = test_cublas();
+	std::cout << result << std::endl;
 
 }

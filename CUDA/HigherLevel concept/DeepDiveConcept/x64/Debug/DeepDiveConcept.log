@@ -1,15 +1,6 @@
-﻿  Compiling CUDA source file copy_if.cu...
-  Compiling CUDA source file kernel.cu...
+﻿  Compiling CUDA source file cublas_example.cu...
   
-  D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\bin\HostX64\x64" -x cu   -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include"  -G   --keep-dir x64\Debug  -maxrregcount=0   --machine 64 --compile -cudart static  -g  -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -Xcompiler "/Fdx64\Debug\vc143.pdb" -o "D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\x64\Debug\copy_if.cu.obj" "D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\copy_if.cu" 
-  
-  D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\bin\HostX64\x64" -x cu   -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include"  -G   --keep-dir x64\Debug  -maxrregcount=0   --machine 64 --compile -cudart static  -g  -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -Xcompiler "/Fdx64\Debug\vc143.pdb" -o "D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\x64\Debug\kernel.cu.obj" "D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\kernel.cu" 
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda.h(22423): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda.h(22423): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda.h(22423): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda.h(22423): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-  copy_if.cu
-  kernel.cu
-  tmpxft_000001e0_00000000-7_copy_if.cudafe1.cpp
-  tmpxft_000055d0_00000000-7_kernel.cudafe1.cpp
+  D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\bin\HostX64\x64" -x cu   -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include"  -G   --keep-dir x64\Debug  -maxrregcount=0   --machine 64 --compile -cudart static  -g  -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -Xcompiler "/Fdx64\Debug\vc143.pdb" -o "D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\x64\Debug\cublas_example.cu.obj" "D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\cublas_example.cu" 
+  cublas_example.cu
+  tmpxft_00007ae4_00000000-7_cublas_example.cudafe1.cpp
   DeepDiveConcept.vcxproj -> D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\x64\Debug\DeepDiveConcept.exe

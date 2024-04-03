@@ -124,7 +124,12 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\crt\math_functi
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\crt\sm_70_rt.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\crt\sm_80_rt.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\crt\sm_90_rt.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cublas_api.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cublas_v2.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuComplex.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda_bf16.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda_bf16.hpp
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda_device_runtime_api.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda_fp16.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda_fp16.hpp
@@ -156,3 +161,4 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\vector_function
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\vector_functions.hpp
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\vector_types.h
 D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\copy_if.h
+D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\cublas_example.h

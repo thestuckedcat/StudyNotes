@@ -8,7 +8,7 @@
 # include<chrono>
 # include "cublas_example.h"
 # include "copy_if_test.h"
-
+# include "9.gelu.h"
 
 
 
@@ -30,4 +30,6 @@ int main()
 	//int result = test_cublas();
 	//std::cout << result << std::endl;
 
+
+	test();
 }

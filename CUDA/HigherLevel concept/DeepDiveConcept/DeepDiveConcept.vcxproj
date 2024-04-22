@@ -77,14 +77,14 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="9. gelu.cu" />
+    <CudaCompile Include="9.gelu.cu" />
     <CudaCompile Include="copy_if.cu" />
     <CudaCompile Include="copy_if_test.cu" />
     <CudaCompile Include="cublas_example.cu" />
     <CudaCompile Include="kernel.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="9. gelu.h" />
+    <ClInclude Include="9.gelu.h" />
     <ClInclude Include="copy_if.h" />
     <ClInclude Include="copy_if_test.h" />
     <ClInclude Include="cublas_example.h" />

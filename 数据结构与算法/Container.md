@@ -814,7 +814,14 @@ Observers 是提供有关容器比较逻辑的信息的函数，这在关联容�
 
 
 
+##### `set`如何保证元素唯一性
 
+**使用比较函数判断相等**：在 C++ 中，如果比较函数 `comp` 用于 `set` 容器，两个元素 `a` 和 `b` 被认为是相等的，当且仅当 `comp(a, b) == false` 并且 `comp(b, a) == false`。这意味着，`a` 不小于 `b` 也不大于 `b`，因此两者相等。
+
+- 当尝试插入一个新元素时，`set` 首先使用比较函数查找正确的插入位置。
+- 在查找过程中，如果找到一个已存在的元素 `x`，使得对于待插入元素 `e` 有 `comp(e, x) == false` 且 `comp(x, e) == false`，则认为 `e` 已存在于集合中。
+- 如果这样的元素 `x` 被找到，新元素 `e` 不会被插入到 `set` 中，因为 `set` 要保持元素的唯一性。
+- 如果没有找到这样的元素，`e` 将被插入到适当的位置以维持元素的顺序。
 
 
 
@@ -1103,7 +1110,354 @@ std::set<int> s = {1, 2, 3, 4, 5};
 
 
 
+
+
+
+
+
+
+
+
 ### 3.2 `multi-set`
+
+#### `multi-set`数据结构原理
+
+`multiset` 是一种允许重复元素的集合，其主要应用场景是当你需要存储一个元素集合，而这些元素可以重复，并且需要保持元素有序时使用。与 `set` 相比，`multiset` 提供了更灵活的数据结构来处理频繁出现的值。
+
+`multiset` 内部通常使用一种平衡二叉搜索树实现，最常用的是红黑树。这种数据结构允许每个节点存储一个与其他节点的键值相等的数据元素。因此，重复的元素在树中各占一个节点。
+
+当你向 `multiset` 添加一个元素时，容器会使用其内部的比较函数（默认为 `std::less<T>`）来确定新元素应该插入的位置。由于 `multiset` 允许重复，新元素即使与已存在的元素值相同，也会被插入到树中。如果有多个相同的元素，新元素通常会被插入到最后一个相同元素的后面。
+
+
+
+Multi-set常用于需要有序和重复元素集合的场景，如统计数据中的频率、数据流的中值查找等。
+
+
+
+#### 构造`multi-set`
+
+1. **默认构造**
+
+```c++
+std::multiset<int> ms1; // 默认构造，空的multiset
+```
+
+2. **初始化列表构造**
+
+   使用初始化列表构造 `multiset`，列表中的元素可以有重复，且会自动排序。
+
+```c++
+std::multiset<int> ms2{1, 2, 2, 3, 4}; // 列表初始化，包含重复元素
+```
+
+3. **自定义比较器**
+
+```c++
+std::multiset<int, std::greater<int>> ms3(ms2.begin(), ms2.end()); // 使用自定义比较器，不然默认是std::less<int>
+
+//自定义比较器
+auto comp = [](int a, int b) { return a > b; };
+std::multiset<int, decltype(comp)> ms6(comp);  // 创建一个以降序排序的 multiset
+
+```
+
+4. **范围构造**
+
+   使用两个迭代器（开始和结束）来构造 multiset，可以从另一个容器或 multiset 中复制元素。
+
+```c++
+std::vector<int> vec = {2, 4, 4, 6};
+std::multiset<int> ms3(vec.begin(), vec.end());
+```
+
+5. **拷贝构造**
+
+   使用另一个 `multiset` 的副本来创建一个新的 `multiset`。
+
+```c++
+std::multiset<int> ms4 = ms2;  // 从 ms2 拷贝元素到 ms4
+```
+
+6. **移动构造**
+
+```c++
+std::multiset<int> ms5 = std::move(ms4);  // 移动 ms4 的内容到 ms5
+```
+
+7. **带有自定义分配器的构造方法**： 
+
+   使用自定义的内存分配器来构造 `multiset`。这对于优化内存使用或使用特定内存池非常有用。
+
+   ```c++
+   std::allocator<int> alloc;
+   std::multiset<int, std::less<int>, std::allocator<int>> ms7(alloc);
+   ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### 增
+
+- **`insert()`**: `insert()` 方法可以用来向 `multiset` 中插入单个元素或一个元素的区间。该操作的时间复杂度通常为 O(log n)，其中 n 是 `multiset` 中元素的数量。
+
+  - 插入单个元素
+
+    ```c++
+    std::multiset<int> ms;
+    ms.insert(10);
+    ms.insert(5);
+    ms.insert(15);
+    ```
+
+  - 插入(另一个container的）区间
+
+    ```c++
+    std::vector<int> values = {20, 40, 30};// container不限，只要这个的迭代器满足输入迭代器的要求
+    std::multiset<int> ms;
+    ms.insert(values.begin(), values.end());
+    ```
+
+    
+
+- **`emplace()`**: 直接在集合中构造元素，避免复制或移动操作。复杂度通常为O(log n)。`emplace` 方法确实$\color{red}{不支持区间构造}$。`emplace` 方法设计的目的是在容器中的指定位置直接构造一个元素，这样可以避免额外的复制或移动操作，从而提高效率。它只能一次构造一个元素，而不是从一个区间构造多个元素。
+
+  - `emplace()` 方法类似于 `insert()`，但它可以直接在 `multiset` 中的正确位置构造元素，避免了复制或移动操作。这可以提高性能，尤其是对于复杂对象的插入。复杂度同样是 O(log n)。
+
+    ```c++
+    std::multiset<std::pair<int, std::string>> ms;
+    ms.emplace(1, "apple");
+    ms.emplace(2, "banana");
+    ```
+
+    
+
+- **`emplace_hint`**: 提供一个提示位置，可能提高插入效率。复杂度为O(log n)或更好。
+
+  - `emplace_hint()` 方法接受一个迭代器作为“提示”位置，这个位置是新元素可能插入的位置。如果提示正确，它可以提高插入效率，因为它减少了部分查找过程。复杂度在最优情况下可以达到 O(1)，但如果提示位置不正确，复杂度仍然是 O(log n)。
+
+    ```c++
+    std::multiset<int> ms;
+    auto it = ms.emplace(10);  // emplace 返回新元素的迭代器
+    ms.emplace_hint(it, 9);    // 插入一个小于10的值，提示位置很接近实际位置
+    ms.emplace_hint(it, 11);   // 插入一个大于10的值，提示位置依然有用
+    ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### 查
+
+- `count()`: 返回特定元素的数量。复杂度为O(log n)。
+- `find()`: 查找特定元素。复杂度为O(log n)。
+- `contains()`: 检查元素是否存在（C++20）。复杂度为O(log n)。
+- `equal_range()`: 返回特定元素的范围（起止迭代器）。复杂度为O(log n)。
+- `lower_bound()`, `upper_bound()`: 返回大于或等于、大于某值的第一个位置。复杂度为O(log n)。
+  - `auto it = ms.lower_bound(a)`则`*it >= a`
+  - `auto it = ms.upper_bound(b)`则`*it > b`
+
+```c++
+#include <iostream>
+#include <set>
+
+int main() {
+    std::multiset<int> ms = {1, 2, 2, 3, 3, 3, 4, 5, 5, 5, 5};
+    
+    // 使用 count() 方法
+    int count_3 = ms.count(3);
+    std::cout << "Number of '3's: " << count_3 << std::endl;
+    
+    // 使用 find() 方法
+    auto it_find = ms.find(4);
+    if (it_find != ms.end()) {
+        std::cout << "Found '4' in the multiset." << std::endl;
+    } else {
+        std::cout << "'4' not found in the multiset." << std::endl;
+    }
+    
+    // 使用 contains() 方法（C++20）
+    bool contains_2 = ms.contains(2);
+    std::cout << "Multiset contains '2': " << (contains_2 ? "Yes" : "No") << std::endl;
+
+    // 使用 equal_range() 方法
+    auto [it_begin, it_end] = ms.equal_range(5);
+    std::cout << "Elements equal to '5': ";
+    for (auto it = it_begin; it != it_end; ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+    
+    // 使用 lower_bound() 和 upper_bound() 方法
+    auto it_lower = ms.lower_bound(3);
+    auto it_upper = ms.upper_bound(3);
+    std::cout << "Elements >= '3' start from: " << *it_lower << std::endl;
+    std::cout << "First element > '3' is: " << *it_upper << std::endl;
+
+    return 0;
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### 删
+
+- `clear()`: 
+
+  - `clear()` 方法用于移除 `multiset` 中的所有元素，使容器变为空。这个操作的复杂度为 O(n)，其中 n 是容器中元素的数量。
+
+    ```c++
+    std::multiset<int> ms = {1, 2, 2, 3, 4};
+    ms.clear();  // 清空 multiset
+    ```
+
+    
+
+- `erase()`: 
+
+  - `erase()` 方法可以删除单个元素或一个元素的区间。删除单个元素的复杂度是 O(log n)，而删除一个区间的复杂度是 O(log n + k)，其中 k 是被删除的元素数。
+
+  - **删除单个元素**：
+
+    当使用键值调用 `erase()` 时（例如 `erase(2)`），它会返回被删除的元素数量。而传入迭代器时（例如 `erase(it)`），没有返回值。
+
+    ```c++
+    std::multiset<int> ms = {1, 2, 2, 3, 4};
+    auto it = ms.find(2);
+    if (it != ms.end()) {
+        ms.erase(it);  // 删除一个元素 2
+    }
+    
+    ```
+
+  - **删除一个区间**：
+
+    ```c++
+    auto start = ms.lower_bound(2);
+    auto end = ms.upper_bound(3);
+    ms.erase(start, end);  // 删除所有 2 和 3，erase[start,end)
+    ```
+
+    
+
+- `extract()`: 移除节点，不破坏迭代器（C++17）。复杂度为O(log n)。
+
+  ```c++
+  std::multiset<int> ms = {1, 2, 2, 3};
+  auto node = ms.extract(2);  // 提取一个 2 的节点
+  // node 现在包含值 2，可以修改或重新使用
+  std::multiset<int> other_ms;
+  other_ms.insert(std::move(node));  // 将提取的节点移动到另一个 multiset
+  ```
+
+  
+
+- `merge()`: 将另一个multiset中的所有元素合并进来（C++17）。复杂度为O(n + m)。
+
+  ```c++
+  std::multiset<int> ms1 = {1, 2, 2};
+  std::multiset<int> ms2 = {2, 3, 4};
+  ms1.merge(ms2);  // 将 ms2 的元素合并到 ms1 中
+  
+  // 注意，ms2 现在为空，因为它的所有元素都被移动到了 ms1
+  ```
+
+  
+
+
+
+> `erase()` 方法从容器中删除一个或多个元素，并释放与这些元素关联的内存。在删除元素时，容器可能需要进行内部结构调整以维持其性能或性质（如平衡二叉树的平衡）。这种调整可能涉及到以下操作：
+>
+> 1. **内存释放**：被删除元素的内存被释放。任何指向该元素的迭代器、指针或引用都将失效。
+> 2. **元素移动**：在某些容器（如 `std::vector` 或 `std::deque`）中，删除一个元素后可能需要移动后续元素来填补空出的位置，这将导致指向移动元素的迭代器、指针或引用失效。
+> 3. **结构调整**：对于基于树的容器（如 `std::set` 或 `std::map`），删除节点可能需要额外的节点旋转和重新链接操作来维持树的平衡，这也可能导致除被删除节点外的其他节点的迭代器失效。
+>
+> `extract()` 方法从 `std::set` 或 `std::multiset` 等基于树的容器中移除元素时，==并不立即重新平衡树==。这一点与 `erase()` 方法不同，后者在删除节点后通常会进行必要的树平衡操作来保证树的性能特性。
+>
+> 当 `extract()` 方法被调用时，它仅仅将指定的节点从树中“拿出”，而不销毁节点或触及其内容。这个节点和其内容随后被封装在一个 `node_type` 对象中返回。这样做有几个直接的结果：
+>
+> 1. **树的结构变动**：节点被移除时，树的结构会相应地调整，例如重新链接父节点和子节点，但不会进行广泛的平衡操作。
+> 2. **不影响迭代器**：除了指向被提取元素的迭代器外，其他迭代器仍然有效。这是因为树的大部分结构仍保持不变。
+> 3. **后续操作可选**：一旦节点被提取，==它可以被修改后重新插入到同一个或不同的容器中==，或者可以被完全丢弃。==如果重新插入，这时候容器将执行必要的平衡操作以维持其性能特性。==
+>
+> `extract()` 的设计初衷是为了提供一种灵活的操作方式，使开发者能够对容器的元素进行更精细的控制，例如在不同容器之间移动节点而不需要重复构造和销毁。==如果 `extract()` 在移除节点时进行了平衡，那么每次提取和重新插入操作都可能触发一次成本较高的树重平衡，这会降低效率。==
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### 改
+
+- `swap()`: 交换两个集合的内容。复杂度为O(1)。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

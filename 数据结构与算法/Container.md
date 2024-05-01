@@ -1331,14 +1331,6 @@ int main() {
 
 
 
-
-
-
-
-
-
-
-
 #### 删
 
 - `clear()`: 
@@ -1451,6 +1443,52 @@ int main() {
 
 
 
+#### 比较器
+
+
+
+* `value_comp()`
+
+  `value_comp()` 方法返回一个可以用来比较 `multiset` 中元素的比较器对象。这个比较器定义了 `multiset` 中元素的排序规则。使用这个比较器，可以确定插入到 `multiset` 的新元素应该位于何处，以及如何维持元素的排序顺序。
+
+* `key_comp()`
+
+  `key_comp()` 方法返回的也是一个比较器，它用于比较 `multiset` 中的键（在这种情况下，键即值）。由于 `multiset` 中的键和值是相同的，`key_comp()` 实际上和 `value_comp()` 返回的比较器是相同的。
+
+```c++
+ std::multiset<int, std::greater<int>> ms = {5, 2, 9, 1, 9, 4};
+
+// 获取比较器
+auto comp = ms.value_comp();
+
+std::cout << "Elements in the set: ";
+for (const auto& e : ms) {
+    std::cout << e << " ";
+}
+std::cout << std::endl;
+
+// 使用比较器手动比较两个元素
+int a = 5, b = 9;
+if (comp(a, b)) {
+    std::cout << "According to the comparator, " << a << " is less than " << b << std::endl;
+} else {
+    std::cout << "According to the comparator, " << a << " is not less than " << b << std::endl;
+}
+
+// 检查 value_comp 和 key_comp 是否相同
+auto compKey = ms.key_comp();
+if (comp(5, 2) == compKey(5, 2)) {
+    std::cout << "value_comp() and key_comp() are equivalent." << std::endl;
+}
+
+```
+
+
+
+
+
+
+
 
 
 
@@ -1466,6 +1504,305 @@ int main() {
 
 
 ### 3.3 `map`
+
+#### `map`数据结构原理
+
+`std::map` 是一种关联容器，它存储键值对并按键进行排序。主要解决的问题是如何有效地存储和检索数据，同时保持键的顺序。它允许快速查找、插入和删除操作，具有高效的数据访问能力。
+
+`std::map` 默认使用 `std::less` 来排序其==键==。可以通过提供自定义比较函数来改变排序行为。
+
+标准库提供的 `std::allocator` 是最常用的分配器，它适用于大多数情况。自定义分配器可以用于优化特定类型的内存管理，例如使用内存池。
+
+`std::map` 通常由红黑树实现，这是一种自平衡二叉搜索树。红黑树保证了最坏情况下的关键操作（如搜索、插入、删除）的时间复杂度为 O(log n)。
+
+> 为什么不使用哈希表，是因为红黑树稳定的能够提供O(logn)的查询，而哈希表最差会到O(n)，平均O(1)。
+
+注意与unordered_map的区分，因为需要排序，因此它是使用红黑树对key排序的，因此其任意key查询value的复杂度是logn，而使用哈希表的unordered_map是O(1)；
+
+此外，map和set其实很相似
+
+首先，不能看成map<int,int> == set<pair<int,int>>，因为pair<int,int>只要pair.first,pair.second任意一个不同，就不算一个个体。因此，准确来说，map和set的关系其实是如下
+
+```c++
+struct node{
+    int key;
+    int value;
+    
+    bool operator==(const node& other) const{
+        return this->key == other.key;
+    }
+    
+    bool operator<(const node& other) const{
+        return this->key < other.key;
+    }
+}
+
+// map<int,int> 等同于set<node>，但是官方给你重载了很多方便的符号
+```
+
+但是，其实你直接读取的话，还是读出来一个pair的。你仍然需要.first,.second来访问，也就是说它使用的其实是
+
+```c++
+struct pair{
+    int first,second;
+     bool operator==(const node& other) const{
+        return this->first == other.first;
+    }
+    
+    bool operator<(const node& other) const{
+        return this->second < other.second;
+    }
+}
+```
+
+
+
+
+
+#### 构造`map`
+
+```c++
+#include <map>
+std::map<int, std::string> map1; // 默认构造函数
+std::map<int, std::string> map2 {{1, "one"}, {2, "two"}}; // 初始化列表构造
+std::map<int, std::string> map3(map2.begin(), map2.end()); // 范围构造
+std::map<int, std::string> map4(map3); // 拷贝构造
+std::map<int, std::string> map5(std::move(map4)); // 移动构造
+std::map<int, std::string> map6(std::move(map2), std::allocator<std::pair<const int, std::string>>()); // 分配器与移动构造
+```
+
+这里的allocator使用了const的key用来保证红黑树结构稳定，用来排序的key不应能够随意直接改动，只能erase然后insert。
+
+
+
+#### 增
+
+- `insert`: 插入键值对，复杂度 O(log n)。
+
+  ```c++
+  std::map<int, std::string> myMap;
+  
+      // 单个键值对的插入
+      myMap.insert(std::pair<int, std::string>(1, "one"));
+  
+      // 使用初始化列表插入单个键值对
+      myMap.insert({2, "two"});
+  
+      // 使用返回值检查插入是否成功
+      auto result = myMap.insert({2, "another two"});
+      if (!result.second) {
+          std::cout << "Element with key 2 not inserted, because it is already in the map." << std::endl;
+      }
+  
+      // 范围插入
+      std::map<int, std::string> anotherMap{{3, "three"}, {4, "four"}};
+      myMap.insert(anotherMap.begin(), anotherMap.end());
+  
+      // 打印结果
+      for (const auto& pair : myMap) {
+          std::cout << pair.first << ": " << pair.second << std::endl;
+      }
+  ```
+
+  
+
+- `emplace`: 在容器中直接构造键值对，复杂度 O(log n)。
+
+  ```c++
+  // 在容器中直接构造键值对
+  myMap.emplace(5, "five");
+  ```
+
+- `emplace_hint`: 在指定位置前提供一个提示，复杂度通常为 O(log n)，但在最佳情况下接近 O(1)。
+
+  ```c++
+  auto it = myMap.begin();
+  // 提供一个位置提示进行插入
+  myMap.emplace_hint(it, 6, "six");
+  ```
+
+- `try_emplace`: C++17 引入，为键插入新元素，如果键已存在，则不进行任何操作，复杂度 O(log n)。
+
+  ```c++
+  // 尝试插入新元素，如果键已存在，不会更新现有元素
+  myMap.try_emplace(7, "seven");
+  myMap.try_emplace(7, "new seven");  // 这条不会执行更新
+  ```
+
+  
+
+
+
+
+
+
+
+#### 查
+
+- `empty`: 检查容器是否为空，复杂度 O(1)。
+
+  ```c++
+  bool isEmpty = myMap.empty();
+  std::cout << "Map is " << (isEmpty ? "empty" : "not empty") << std::endl;
+  ```
+
+- `size`: 返回容器中的元素数，复杂度 O(1)。
+
+  ```c++
+  std::cout << "Size of map: " << myMap.size() << std::endl;
+  ```
+
+- `max_size`: 返回容器可能包含的最大元素数，复杂度 O(1)。
+
+  ```c++
+  std::cout << "Max size of map: " << myMap.max_size() << std::endl;
+  
+  ```
+
+- `find`: 查找键，复杂度 O(log n)。
+
+  ```c++
+  auto findIter = myMap.find(5);
+  if (findIter != myMap.end()) {
+      std::cout << "Found key 5 with value: " << findIter->second << std::endl;
+  }
+  ```
+
+- `count`: 返回特定键的元素数量（对于 map 总是 1 或 0），复杂度 O(log n)。
+
+  ```c++
+  std::cout << "Count of elements with key 5: " << myMap.count(5) << std::endl;
+  ```
+
+- `contains`: C++20 引入，检查键是否存在，复杂度 O(log n)。
+
+  ```c++
+  if (myMap.contains(5)) {
+      std::cout << "Map contains key 5" << std::endl;
+  }
+  ```
+
+  
+
+
+
+**范围查询**
+
+- `equal_range`: 返回特定键的范围，复杂度 O(log n)。
+
+  ```c++
+  auto range = myMap.equal_range(5);
+  for (auto i = range.first; i != range.second; ++i) {
+      std::cout << i->first << ": " << i->second << std::endl;
+  }
+  ```
+
+- `lower_bound`, `upper_bound`: 分别返回不小于和大于给定键的第一个元素的迭代器，复杂度 O(log n)。
+
+  ```c++
+  auto lower = myMap.lower_bound(5);
+  auto upper = myMap.upper_bound(5);
+  std::cout << "Lower bound of 5: " << lower->second << std::endl;
+  if (upper != myMap.end()) {
+      std::cout << "Upper bound of 5: " << upper->second << std::endl;
+  }
+  ```
+
+  
+
+#### 删
+
+- `clear`: 清除所有元素，复杂度 O(n)。
+
+  ```c++
+  myMap.clear();
+  ```
+
+- `erase`: 删除一个或多个元素，复杂度 O(log n)。
+
+  ```c++
+  // 通过键删除
+  myMap.erase(5);
+  
+  // 通过迭代器删除
+  auto it = myMap.find(6);
+  if (it != myMap.end()) {
+      myMap.erase(it);
+  }
+  
+  // 通过迭代器范围删除
+  auto range = myMap.equal_range(5);
+  myMap.erase(range.first,range.second);
+  ```
+
+- `extract`: C++17 引入，提取节点，不破坏迭代器，复杂度 O(log n)。
+
+  ```c++
+  auto node = myMap.extract(5);
+  if (!node.empty()) {
+      std::cout << "Extracted node with key " << node.key() << " and value " << node.mapped() << std::endl;
+  }
+  ```
+
+  
+
+#### 改
+
+- `swap`: 交换两个 map 的内容，复杂度 O(1)。
+
+  ```c++
+  std::map<int, std::string> newMap;
+  newMap.swap(myMap);
+  ```
+
+- `merge`: C++17 引入，合并两个 map，复杂度 O(n + m).
+
+  ```c++
+  std::map<int, std::string> otherMap{{8, "eight"}};
+  myMap.merge(otherMap);
+  ```
+
+  
+
+
+
+
+
+#### 比较器
+
+- `key_comp`: 返回用于键比较的函数对象。
+
+  ```c++
+  auto comp = myMap.key_comp();
+  bool before = comp(1, 2);  // 返回 true 如果 1 在 2 之前
+  ```
+
+  
+
+- `value_comp`: 返回用于值比较的函数对象。
+
+  ```c++
+  auto vcomp = myMap.value_comp();
+  bool before = vcomp(*myMap.find(1), *myMap.find(2));
+  ```
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

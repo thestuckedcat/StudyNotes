@@ -97,9 +97,9 @@ class RMSNorm(torch.nn.Module):
 
 
 
+## RoPE
 
-
-## Embedding的正弦余弦位置编码生成
+### Embedding的正弦余弦位置编码生成
 
 end可以理解为句子和输入序列的长度
 
@@ -137,13 +137,7 @@ def precompute_freqs_cis(dim: int, end: int, theta: float = 10000.0):
 
 ```
 
-
-
-
-
-
-
-## RoPE
+### rotary_emb
 
 ```python
 def apply_rotary_emb(

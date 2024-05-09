@@ -160,6 +160,7 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\texture_types.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\vector_functions.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\vector_functions.hpp
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\vector_types.h
+D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\10.fused_bias_mask_scale_and_add.h
 D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\9.gelu.h
 D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\copy_if.h
 D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\copy_if_test.h

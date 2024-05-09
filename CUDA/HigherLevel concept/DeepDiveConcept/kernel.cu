@@ -9,7 +9,7 @@
 # include "cublas_example.h"
 # include "copy_if_test.h"
 # include "9.gelu.h"
-
+# include"10.fused_bias_mask_scale_and_add.h"
 
 
 
@@ -31,5 +31,8 @@ int main()
 	//std::cout << result << std::endl;
 
 
-	test();
+	//test();
+
+	test_fp32_fused_kernel();
+
 }

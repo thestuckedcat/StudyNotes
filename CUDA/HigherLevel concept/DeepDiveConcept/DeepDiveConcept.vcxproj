@@ -77,6 +77,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="10.fused_bias_mask_scale_and_add.cu" />
     <CudaCompile Include="9.gelu.cu" />
     <CudaCompile Include="copy_if.cu" />
     <CudaCompile Include="copy_if_test.cu" />
@@ -84,6 +85,7 @@
     <CudaCompile Include="kernel.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="10.fused_bias_mask_scale_and_add.h" />
     <ClInclude Include="9.gelu.h" />
     <ClInclude Include="copy_if.h" />
     <ClInclude Include="copy_if_test.h" />

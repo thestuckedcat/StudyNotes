@@ -4,5 +4,5 @@
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda.h(22423): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\cuda.h(22423): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
   10.fused_bias_mask_scale_and_add.cu
-  tmpxft_0000058c_00000000-7_10.fused_bias_mask_scale_and_add.cudafe1.cpp
+  tmpxft_00006880_00000000-7_10.fused_bias_mask_scale_and_add.cudafe1.cpp
   DeepDiveConcept.vcxproj -> D:\Github-storage\StudyNotes\CUDA\HigherLevel concept\DeepDiveConcept\x64\Debug\DeepDiveConcept.exe

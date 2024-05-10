@@ -33,6 +33,7 @@ int main()
 
 	//test();
 
-	test_fp32_fused_kernel();
+	//test_fp32_fused_kernel();
+	test_fp16_fused_kernel();
 
 }

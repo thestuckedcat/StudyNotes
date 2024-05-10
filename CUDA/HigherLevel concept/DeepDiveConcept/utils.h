@@ -1,4 +1,7 @@
 #pragma once
+#include<iostream>
+#include<chrono>
+
 #define CHECK(call)                                   \
 do                                                    \
 {                                                     \

@@ -3,6 +3,13 @@
 # include<iostream>
 #include<cuda_fp16.h>
 # include<cassert>
+#include<cuda.h>
+#include"cuda_runtime.h"
+#include"utils.h"
+
+
+
+
 template<typename T>
 struct MaskAndNormFunctor {
 	// mask
@@ -58,7 +65,7 @@ void CPU_fused_kernel(
 template<typename T>
 bool CHECK_RES(T* cpu_output, T* gpu_output, const int ele_cnt) {
 	for (int i = 0; i < ele_cnt; i++) {
-		if (std::abs(cpu_output[i] - gpu_output[i]) > (T)(1e-3)) {
+		if (std::abs(cpu_output[i] - gpu_output[i]) > (T)(1e-5)) {
 			std::cout << "第" << i << "个元素出错" << std::endl;
 			std::cout << cpu_output[i] << " " << gpu_output[i] << std::endl;
 			return false;
@@ -69,7 +76,7 @@ bool CHECK_RES(T* cpu_output, T* gpu_output, const int ele_cnt) {
 }
 
 void test_fp32_fused_kernel() {
-	constexpr int ele_cnt = 100000;
+	constexpr int ele_cnt = 1<<30;
 	float scale = 0.5;
 
 	// parameter in cpu
@@ -77,24 +84,24 @@ void test_fp32_fused_kernel() {
 	float* add_val = new float[ele_cnt];
 	for (int i = 0; i < ele_cnt; i++) {
 		mask_tensor[i] = (uint8_t)(i%2);
-		add_val[i] = (float)(i);
+		add_val[i] = (float)(i%10) ;
 	}
 
 	// bias,input,output in cpu
-	int bias_size = 100;
+	int bias_size = 1024;
 	float* x = (float*)malloc(sizeof(float) * ele_cnt);
 	float* y = (float*)malloc(sizeof(float) * ele_cnt);
 	float* bias = (float*)malloc(sizeof(float) * bias_size);
 	for (int i = 0; i < ele_cnt; i++) {
-		x[i] = (float)(i);
+		x[i] = (float)(i%100);
 	}
 	for (int i = 0; i < bias_size; i++) {
-		bias[i] = (float)(i);
+		bias[i] = (float)(i%10);
 	}
 
 	// cpu_output
 	float* cpu_output = (float*)malloc(sizeof(float) * ele_cnt);
-	CPU_fused_kernel<float>(mask_tensor, add_val, scale, x, ele_cnt, bias, bias_size, cpu_output);
+	TIME_CPU(CPU_fused_kernel<float>(mask_tensor, add_val, scale, x, ele_cnt, bias, bias_size, cpu_output));
 
 
 	// bias,input,output in gpu
@@ -130,12 +137,16 @@ void test_fp32_fused_kernel() {
 
 	MaskAndNormFunctor<float> MNF(d_mask_tensor, d_add_val, scale);
 
-	FusedBiasAddCUDAKernelFloat << <gridSize, blockSize >> > (	MNF,
-																ele_cnt,
-																bias_size,
-																d_x,
-																d_bias,
-																d_y);
+	auto kernel_launcher = [&]() {
+		FusedBiasAddCUDAKernelFloat << <gridSize, blockSize >> > (MNF,
+			ele_cnt,
+			bias_size,
+			d_x,
+			d_bias,
+			d_y);
+		};
+
+	TIME_GPU(kernel_launcher);
 
 	cudaMemcpy(y, d_y, sizeof(float) * ele_cnt, cudaMemcpyDeviceToHost);
 
@@ -153,12 +164,10 @@ void test_fp32_fused_kernel() {
 	cudaFree(d_bias);
 	cudaFree(d_mask_tensor);
 	cudaFree(d_add_val);
-
-
-
-
-
 }
+
+
+
 // fp16偏特例化
 template<>
 struct MaskAndNormFunctor<__half> {
@@ -209,10 +218,11 @@ __global__ void FusedBiasAddCUDAKernelFloat<FUNCTOR,__half>(
 	const __half* bias,
 	__half* y)
 {
+	// pack
 	const int h2_ele_cnt = elem_cnt / 2;
-	assert(elem_cnt % 2 == 0);
+	//assert(elem_cnt % 2 == 0);
 	const int h2_bias_size = bias_size / 2;
-	assert(elem_cnt % 2 == 0);
+	//assert(elem_cnt % 2 == 0);
 	const auto* x_h2 = reinterpret_cast<const __half2*>(x);
 	const auto* bias_h2 = reinterpret_cast<const __half2*>(bias);
 	auto* y_h2 = reinterpret_cast<__half2*>(y);
@@ -230,6 +240,135 @@ __global__ void FusedBiasAddCUDAKernelFloat<FUNCTOR,__half>(
 }
 
 
-void test_fp16_fused_kernel() {
+void calculate_cpu_from_half(
+	uint8_t* mask_tensor,
+	__half* add_val,
+	float scale,
+	__half* x,
+	int ele_cnt, 
+	__half* bias,
+	int bias_size, 
+	float* cpu_output
+	) {
+	// convert
+	float* fp_add_val = (float*)malloc(sizeof(float) * ele_cnt);
+	float* fp_x = (float*)malloc(sizeof(float) * ele_cnt);
+	float* fp_bias = (float*)malloc(sizeof(float) * ele_cnt);
+	for (int i = 0; i < ele_cnt; i++) {
+		fp_add_val[i] = __half2float(add_val[i]);
+		fp_x[i] = __half2float(x[i]);
+		
+	}
 
+	for (int i = 0; i < bias_size; i++) {
+		fp_bias[i] = __half2float(bias[i]);
+
+	}
+
+	TIME_CPU(CPU_fused_kernel<float>(mask_tensor, fp_add_val, scale, fp_x, ele_cnt, fp_bias, bias_size, cpu_output));
+
+	free(fp_add_val);
+	free(fp_x);
+	free(fp_bias);
+}
+
+float* convert2float(__half* gpu_result, int ele_cnt) {
+	float* fp_gpu_result = (float*)malloc(sizeof(float) * ele_cnt);
+	for (int i = 0; i < ele_cnt; i++) {
+		fp_gpu_result[i] = __half2float(gpu_result[i]);
+	}
+	return fp_gpu_result;
+}
+
+void test_fp16_fused_kernel() {
+	constexpr int ele_cnt = 1<<30;
+	float scale = 0.5;
+
+	// parameter in cpu
+	uint8_t* mask_tensor = new uint8_t[ele_cnt];
+	__half* add_val = new __half[ele_cnt];
+	for (int i = 0; i < ele_cnt; i++) {
+		mask_tensor[i] = (uint8_t)(i % 2);
+		add_val[i] = (__half)(i%10);
+	}
+
+	// bias,input,output in cpu
+	int bias_size = 1024;
+	__half* x = (__half*)malloc(sizeof(__half) * ele_cnt);
+	__half* y = (__half*)malloc(sizeof(__half) * ele_cnt);
+	__half* bias = (__half*)malloc(sizeof(__half) * bias_size);
+	for (int i = 0; i < ele_cnt; i++) {
+		x[i] = (__half)(i%100);
+	}
+	for (int i = 0; i < bias_size; i++) {
+		bias[i] = (__half)(i%10);
+	}
+
+	// cpu_output,只能使用float来算
+	
+	float* cpu_output = (float*)malloc(sizeof(float) * ele_cnt);
+	calculate_cpu_from_half(mask_tensor, add_val, scale, x, ele_cnt, bias, bias_size, cpu_output);
+	
+	// bias,input,output in gpu
+	__half* d_x, * d_y, * d_bias;
+	cudaMalloc((void**)&d_x, ele_cnt * sizeof(__half));
+	cudaMalloc((void**)&d_y, ele_cnt * sizeof(__half));
+	cudaMalloc((void**)&d_bias, bias_size * sizeof(__half));
+
+	cudaMemcpy(d_x, x, sizeof(__half) * ele_cnt, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_y, y, sizeof(__half) * ele_cnt, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_bias, bias, sizeof(__half) * bias_size, cudaMemcpyHostToDevice);
+
+	// mask_tensor, add_cal in gpu
+	uint8_t* d_mask_tensor;
+	__half* d_add_val;
+	cudaMalloc((void**)&d_mask_tensor, ele_cnt * sizeof(uint8_t));
+	cudaMalloc((void**)&d_add_val, ele_cnt * sizeof(__half));
+	cudaMemcpy(d_mask_tensor, mask_tensor, sizeof(uint8_t) * ele_cnt, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_add_val, add_val, sizeof(__half) * ele_cnt, cudaMemcpyHostToDevice);
+
+	/*
+		这是一个 CUDA 提供的结构体，用于存储 GPU 设备的各项属性。
+		其中包含了 GPU 设备的名称、计算能力、内存大小、最大线程数、最大网格和块大小等信息。
+	*/
+	cudaDeviceProp deviceProp;
+	// 将指定 GPU 设备的属性信息填充到 cudaDeviceProp 结构体中。
+	cudaError_t message_GPU = cudaGetDeviceProperties(&deviceProp, 0);
+
+	int maxblocks = deviceProp.maxGridSize[0];
+
+	int blockSize = 1024;
+	int gridSize = std::min((ele_cnt/2 + blockSize - 1) / blockSize, maxblocks);
+
+	MaskAndNormFunctor<__half> MNF(d_mask_tensor, d_add_val, scale);
+
+	auto kernel_launcher = [&]() {
+		FusedBiasAddCUDAKernelFloat << <gridSize, blockSize >> >(MNF,
+			ele_cnt,
+			bias_size,
+			d_x,
+			d_bias,
+			d_y);
+		};
+
+	TIME_GPU(kernel_launcher);
+
+	cudaMemcpy(y, d_y, sizeof(__half) * ele_cnt, cudaMemcpyDeviceToHost);
+	
+	float* fp_gpu_result = convert2float(y, ele_cnt);
+
+	CHECK_RES(cpu_output, fp_gpu_result, ele_cnt);
+	
+	delete[] mask_tensor;
+	delete[] add_val;
+	free(x);
+	free(y);
+	free(bias);
+	free(cpu_output);
+	free(fp_gpu_result);
+	cudaFree(d_x);
+	cudaFree(d_y);
+	cudaFree(d_bias);
+	cudaFree(d_mask_tensor);
+	cudaFree(d_add_val);
 }

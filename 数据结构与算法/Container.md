@@ -1874,7 +1874,17 @@ std::map<int, std::string> map6(std::move(map2), std::allocator<std::pair<const 
 
 ### 5.3 `priority_queue`
 
+**比较函数返回 `true` 时，表示第一个参数的优先级低于第二个参数的优先级**。
 
+下面的比较函数返回如果为true，代表a的优先级低于b的优先级，也就是说这是一个最小堆（因为b的优先级高，所以更靠近堆顶）
+
+```c++
+bool compare(T& a, T& b){
+    return a > b;
+}
+```
+
+Priority_queue默认是一个最大堆
 
 
 

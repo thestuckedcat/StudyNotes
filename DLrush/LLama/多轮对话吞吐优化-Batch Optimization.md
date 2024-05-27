@@ -137,6 +137,8 @@ Continuous Batching的想法很简单，就是这个Batch中某一个Sequence结
 
 ### Continuous Batch的工程流程
 
+> https://zhuanlan.zhihu.com/p/688551989?utm_campaign=shareopn&utm_medium=social&utm_psn=1778457361583648768&utm_source=wechat_session
+
 上述的 Continuous batching 其实还忽略了一些重要的**工程**上的问题，我们通过分析 vLLM 中的 batching 操作来认识更详细的 batching 策略。
 
 
@@ -189,6 +191,8 @@ vLLM使用三个双端队列维护所有用户的请求调度
 首先需要注意的是，vLLM采用的是连续batch的模式，这样我们就不需要申请max_seq_len*batch_size的空间。
 
 因为 vLLM 的**算子采用了特殊的设计**，可以把所有的多个输入当做一个 batch 考虑，不需要考虑每个 batch 具体的序列长度，因此这里采用一行的形式来展示实际的 batch 情况，更加符合 vLLM 中的设计。为了更好的视觉效果这里用虚线框显式的展示的每个请求占用的范围。
+
+> 这种多个请求处理成batchsize为1的形状再切分的好处主要在与减少了显存的内部碎片。普通的batch处理方式是：不同长度的请求要使用padding组合成相同长度才能进行并行计算。这些padding就是浪费的显存，即内部碎片。组合成一个Batching再切分并行计算可以优化掉这些内部碎片。
 
 ![image-20240528004147039](./assets/image-20240528004147039.png)
 

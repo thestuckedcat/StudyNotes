@@ -1812,7 +1812,257 @@ std::map<int, std::string> map6(std::move(map2), std::allocator<std::pair<const 
 
 ### 3.4 `multi-map`
 
+#### `multimap`数据结构原理
 
+`multimap` 是 C++ 标准库中的一种关联容器，允许存储多个具有相同键值的元素。它是通过平衡二叉树（例如红黑树）实现的，这使得其具有高效的插入、删除和查找操作。
+
+
+
+#### 构造方法
+
+**默认构造函数**：创建一个空的 multimap。
+
+```c++
+std::multimap<int, std::string> mmap;
+```
+
+**范围构造函数**：用指定范围内的元素构造一个 multimap。
+
+```c++
+std::vector<std::pair<int, std::string>> vec = { {1, "one"}, {2, "two"}, {3, "three"} };
+std::multimap<int, std::string> mmap(vec.begin(), vec.end());
+```
+
+**拷贝构造函数**：用另一个 multimap 的拷贝构造一个新的 multimap。
+
+```c++
+std::multimap<int, std::string> mmap1 = { {1, "one"}, {2, "two"} };
+std::multimap<int, std::string> mmap2(mmap1);
+```
+
+**移动构造函数**：用另一个 multimap 的移动构造一个新的 multimap。
+
+```c++
+std::multimap<int, std::string> mmap1 = { {1, "one"}, {2, "two"} };
+std::multimap<int, std::string> mmap2(std::move(mmap1));
+```
+
+
+
+
+
+
+
+
+
+#### Capacity
+
+* `empty`：判断 multimap 是否为空。
+
+```c++
+bool isEmpty = mmap.empty();
+```
+
+* `size`：返回 multimap 中元素的个数。
+
+```c++
+size_t size = mmap.size();
+```
+
+* `max_size`：返回 multimap 能容纳的最大元素个数。
+
+```c++
+size_t maxSize = mmap.max_size();
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### Modifier
+
+**`clear`**：清空 multimap 中的所有元素。
+
+```c++
+mmap.clear();
+```
+
+
+
+
+
+**`insert`**：插入元素。有多种重载：
+
+1. 插入单个元素。
+
+   ```c++
+   mmap.insert({4, "four"});
+   ```
+
+2. 插入多个元素。
+
+   ```c++
+   std::vector<std::pair<int, std::string>> vec = { {5, "five"}, {6, "six"} };
+   mmap.insert(vec.begin(), vec.end());
+   ```
+
+
+
+
+
+**`emplace`**：在原地构造并插入元素。
+
+```c++
+mmap.emplace(7, "seven");
+```
+
+
+
+
+
+**`emplace_hint`**：在给定位置附近原地构造并插入元素。
+
+```c++
+mmap.emplace_hint(mmap.begin(), 8, "eight");
+```
+
+
+
+
+
+**`erase`**：删除元素。有多种重载：返回删除的下一个迭代器
+
+1. 按照迭代器删除。
+
+   ```c++
+   auto it = mmap.erase(mmap.begin());
+   ```
+
+2. 按照键值删除。
+
+   ```c++
+   mmap.erase(1);
+   ```
+
+
+
+
+
+**`swap`**：交换两个 multimap 的内容（交换两个multimap容器）。
+
+```c++
+std::multimap<int, std::string> mmap2 = { {9, "nine"}, {10, "ten"} };
+mmap.swap(mmap2);
+```
+
+
+
+
+
+**`extract`**：移除并返回元素。（返回被移除的元素）
+
+```c++
+auto node = mmap.extract(2);
+```
+
+
+
+
+
+**`merge`**：将另一个 multimap 的元素合并到当前 multimap 中。
+
+```c++
+std::multimap<int, std::string> mmap2 = { {11, "eleven"}, {12, "twelve"} };
+mmap.merge(mmap2);
+```
+
+
+
+
+
+
+
+
+
+
+
+#### Query
+
+**`count`**：返回与给定键值相等的元素数量。
+
+```c++
+size_t count = mmap.count(1);
+```
+
+**`find`**：查找具有**给定键值**的元素，返回迭代器。
+
+```c++
+auto it = mmap.find(1);
+```
+
+**`contains`**：检查 multimap 是否包含具有指定键的元素。
+
+```c++
+bool found = mmap.contains(2);
+```
+
+**`equal_range`**：返回与给定键值相等的元素范围(`std::pair<std::multimap<int, std::string>::iterator, std::multimap<int, std::string>::iterator>`)
+
+```c++
+auto range = mmap.equal_range(1);
+```
+
+**`lower_bound`**：返回第一个大于等于给定键值的元素的迭代器。
+
+```c++
+auto it = mmap.lower_bound(2);
+```
+
+**`upper_bound`**：返回第一个大于给定键值的元素的迭代器。
+
+```c++
+auto it = mmap.upper_bound(2);
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### Comparison
+
+`key_comp`：返回用于比较键值的比较对象。
+
+```c++
+auto comp = mmap.key_comp();
+```
+
+`value_comp`：返回用于比较键值对的比较对象。
+
+```c++
+auto comp = mmap.value_comp();
+```
 
 
 
@@ -1894,3 +2144,203 @@ Priority_queue默认是一个最大堆
 
 
 
+
+
+
+
+## 7. 容器与自定义类型
+
+
+
+### 使用Hash表
+
+在 `std::unordered_set` 和 `std::unordered_map` 中，自定义类型需要重载
+
+`std::hash`和`operator==`
+
+
+
+* 哈希函数将键对象转换为一个整数值（哈希值），该值用于决定该对象存储在哈希表中的哪个桶（bucket）中。哈希函数应该满足以下特性：
+
+  - **一致性**：对于相同的输入，哈希函数必须始终产生相同的输出。
+  - **均匀性**：理想情况下，哈希函数应将输入均匀地分布在所有可能的哈希值上，以减少冲突。
+
+* 当你的自定义类型需要在基于哈希的容器（如 `std::unordered_map` 和 `std::unordered_set`）中使用时，需要重载 `operator==`，以便在键值比较时能够正确判断两个键是否相等。
+
+  当哈希表检测到冲突（即两个不同的键对象具有相同的哈希值）时，需要使用 `==` 运算符来确定这些键是否实际相等。如果两个键的哈希值相同并且 `==` 运算符返回 `true`，则认为它们是相同的键。
+
+```c++
+#include <iostream>
+#include <unordered_map>
+#include <functional>
+#include <murmur3.h>  // 假设你有一个 MurmurHash 的实现
+
+// 自定义类型
+struct MyKey {
+    int a;
+    int b;
+    std::string c;
+
+    // 重载 == 运算符
+    bool operator==(const MyKey& other) const {
+        return a == other.a && b == other.b && c == other.c;
+    }
+};
+
+// 提供自定义哈希函数
+namespace std {
+    template<>
+    struct hash<MyKey> {
+        size_t operator()(const MyKey& key) const {
+            // 使用 MurmurHash3 来计算哈希值
+            size_t hash = 0;
+            MurmurHash3_x86_32(&key, sizeof(MyKey), 0, &hash);
+            return hash;
+        }
+    };
+}
+
+int main() {
+    std::unordered_map<MyKey, std::string> umap;
+    umap[{1, 2, "foo"}] = "Hello";
+    umap[{3, 4, "bar"}] = "World";
+
+    for (const auto& [key, value] : umap) {
+        std::cout << "Key: (" << key.a << ", " << key.b << ", " << key.c << ") => " << value << std::endl;
+    }
+
+    return 0;
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 使用有序容器
+
+#### 重载<号
+
+`std::map` 和 `std::set` 是基于红黑树实现的有序容器。要在这些容器中使用自定义类型作为键，需要重载 `<` 运算符。
+
+```c++
+#include <iostream>
+#include <map>
+#include <set>
+
+// 自定义类型
+struct MyKey {
+    int a;
+    int b;
+
+    bool operator<(const MyKey& other) const {
+        return std::tie(a, b) < std::tie(other.a, other.b);
+    }
+};
+
+int main() {
+    std::map<MyKey, std::string> omap;
+    omap[{1, 2}] = "Hello";
+    omap[{3, 4}] = "World";
+
+    for (const auto& [key, value] : omap) {
+        std::cout << "Key: (" << key.a << ", " << key.b << ") => " << value << std::endl;
+    }
+
+    std::set<MyKey> oset;
+    oset.insert({1, 2});
+    oset.insert({3, 4});
+
+    for (const auto& key : oset) {
+        std::cout << "Key: (" << key.a << ", " << key.b << ")" << std::endl;
+    }
+
+    return 0;
+}
+```
+
+
+
+
+
+
+
+#### 使用**自定义比较器**
+
+```c++
+#include <iostream>
+#include <map>
+#include <set>
+#include <queue>
+#include <functional>
+
+// 自定义类型
+struct MyKey {
+    int a;
+    int b;
+};
+
+// 自定义比较器
+struct MyComparator {
+    bool operator()(const MyKey& lhs, const MyKey& rhs) const {
+        return std::tie(lhs.a, lhs.b) < std::tie(rhs.a, rhs.b);
+    }
+};
+
+int main() {
+    std::set<MyKey, MyComparator> mySet;
+    mySet.insert({2, 1});
+    mySet.insert({1, 2});
+
+    for (const auto& key : mySet) {
+        std::cout << "Key: (" << key.a << ", " << key.b << ")" << std::endl;
+    }
+
+    return 0;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+## 使用容器的几个要素
+
+* 使用自定义比较器增加灵活度
+
+  ```c++
+  struct MyComparator {
+      bool operator()(const MyKey& lhs, const MyKey& rhs) const {
+          return std::tie(lhs.a, lhs.b) < std::tie(rhs.a, rhs.b);
+      }
+  };
+  
+  std::set<MyKey, MyComparator> mySet;
+  ```
+
+  
+
+* 使用emplace而非insert
+
+* 使用std::move
+
+* 使用std::forward（泛型编程中使用，完美转发）
+
+* 使用智能指针

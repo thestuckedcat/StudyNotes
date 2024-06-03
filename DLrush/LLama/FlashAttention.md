@@ -1,6 +1,6 @@
 > FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness
 
-
+> 解读：https://mp.weixin.qq.com/s?__biz=MzU2NjU3OTc5NA==&mid=2247581464&idx=1&sn=eafed9a50ef03833caeba6bf63a126fa&chksm=fca9b825cbde3133ee0bd2096f2e22fa66e09fd843d005f2f84e7c34b843dc0a709b03d83930&scene=27
 
 Flash Attention主要针对GPU内存级别之间的读写，这是一种IO感知的精确注意算法。
 
@@ -221,7 +221,6 @@ Flash Attention的目的是，利用tiling将数据分块，然后利用recomput
   \\=e^{m(x^{(1)}) - m(x)}\ell(x^{(1)}) + e^{m(x^{(2)}) - m(x)}\ell(x^{(2)})
   $$
   
-
 * **计算拼接后的softmax值**
   $$
   softmax(x) = \frac{f(x)}{\ell(x)}

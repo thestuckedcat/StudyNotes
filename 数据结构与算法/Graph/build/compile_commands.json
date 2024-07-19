@@ -1,0 +1,8 @@
+[
+{
+  "directory": "D:/Github-storage/StudyNotes/数据结构与算法/Graph/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -ID:/Github-storage/StudyNotes/数据结构与算法/Graph/traversal -g -std=gnu++20 -o CMakeFiles\\GRAPH.dir\\main.cpp.obj -c D:\\Github-storage\\StudyNotes\\数据结构与算法\\Graph\\main.cpp",
+  "file": "D:\\Github-storage\\StudyNotes\\数据结构与算法\\Graph\\main.cpp",
+  "output": "CMakeFiles\\GRAPH.dir\\main.cpp.obj"
+}
+]

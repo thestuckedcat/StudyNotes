@@ -248,7 +248,44 @@ std::vector<int> v6 {1, 2, 3, 4, 5};                // 初始化列表构造函�
 
 
 
+* assign
 
+  * `void assign( size_type count, const T& value );`
+
+    ```c++
+    std::vector<char> characters;
+    characters.assign(5, 'a');
+    print_vector();
+    /*
+    a a a a a
+    */
+    ```
+
+    
+
+  * `void assign( InputIt first, InputIt last );`
+
+    ```c++
+    std::vector<char> characters;
+    const std::string extra(6, 'b');
+    characters.assign(extra.begin(), extra.end());
+    print_vector();
+    /*
+    b b b b b b
+    */
+    ```
+
+  * 直接赋值
+
+    ```c++
+    characters.assign({'C', '+', '+', '1', '1'});
+    print_vector();
+    /*
+    C + + 1 1
+    */
+    ```
+
+    
 
 
 

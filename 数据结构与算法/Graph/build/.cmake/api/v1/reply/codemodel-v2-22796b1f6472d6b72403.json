@@ -1,0 +1,60 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "GRAPH",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "GRAPH::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GRAPH-Debug-b37ae23acab7a3f47147.json",
+					"name" : "GRAPH",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/Github-storage/StudyNotes/\u6570\u636e\u7ed3\u6784\u4e0e\u7b97\u6cd5/Graph/build",
+		"source" : "D:/Github-storage/StudyNotes/\u6570\u636e\u7ed3\u6784\u4e0e\u7b97\u6cd5/Graph"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 5
+	}
+}

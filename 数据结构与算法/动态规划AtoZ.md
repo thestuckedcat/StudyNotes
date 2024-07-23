@@ -1481,3 +1481,119 @@ for(int group_id = 0; group_id < N; group_id++)
 
 
 
+# 一些其他题目的DP解法
+
+### 279. 完全平方
+
+![image-20240722201614641](./assets/image-20240722201614641.png)
+
+此题也可以由数论解
+
+分解子问题为`dp[i]`，其中i代表组成整数i完全平方数的个数。
+
+
+
+更新时，我们==遍历最后一个作为组成的完全平方数(`1 to lower_bound(i)`)==，更新即可
+
+```c++
+class Solution {
+public:
+    int numSquares(int n) {
+
+        // cnt[i] refers to the minimum num of i
+        std::vector<int> cnt(n+1, INT_MAX);
+
+        cnt[0] = 0;
+        cnt[1] = 1;
+
+        for(int i = 2; i <= n; i++){
+            for(int j = 1; j * j <= i; j++){
+                // j refers to the filled square
+                 cnt[i] = std::min(cnt[i], cnt[i - j * j]);
+            }
+            cnt[i]++;
+        }
+        return cnt[n];
+    }
+};
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 139. 单词拆分
+
+![image-20240723134428563](./assets/image-20240723134428563.png)
+
+![image-20240723134516333](./assets/image-20240723134516333.png)
+
+这个问题其实是一个true false问题，一眼就能看出是子串匹配推导到整体匹配
+
+
+
+我的第一个想法是`dp[i][j]`代表`s[i] : s[j]`的子串是否匹配，然后逐步推出去，
+
+每推出去一个字符，`dp[i-1][j]`或者`dp[i][j+1]`是否匹配就需要知道新加入的字符能否与已有字符组成新的单词
+
+以`dp[i-1][j]`为例，这里相对于`dp[i][j]`多添加了一个`s[i-1]`的字符，此时可能形成新word的部分就是`dp[i-1][k]`这个连续的子串，我们对每个单词`word`比对，也就是将字符串比对分为了两部分
+
+`dp[i-1][i-1+word.size()]`和`dp[i-1+word.size()][j]`两部分，我们要求前者在s中对应的子串必须与word完全相同，后者本身是可匹配的。
+
+
+
+分析到这里可以发现，二维模板匹配是完全没必要的，可以直接使用一维解决
+
+![image-20240723135950306](./assets/image-20240723135950306.png)
+
+如图所示，
+
+* `dp[i]`代表`s[0:i-1]`的子串是否能够被dict表示
+* `dp[0]`被设置为True（代表如果所需的s为空，那么不从dict中取即可）
+* 对于每一个`dp[i]`，我们需要判断==以这个单词为结尾时，`dp[i]`能否有机会完全匹配==，这里暗含了两个条件
+  * 该单词与`dp[i]`对应的substring的末尾单词一致
+  * 抛去该单词的substring本身能够被dict表示
+
+
+
+因此可以得到以下代码
+
+```c++
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        // dp[i] refers to if s[0:i-1] can be represented by wordDict
+        std::vector<int> dp(s.size() + 1, 0);
+
+        dp[0] = 1;
+
+        // for each substring [0,i-1] in s, therefore i stand for substirng length
+        for(int i = 1; i<= s.size();i++){
+            for(auto& word : wordDict){
+                // while word size is no larger than substring length, substring may can be represented by word
+                if(word.size() <= i){
+                    // The former substring is available to represent and The word as tail is same
+                    dp[i] = (dp[i-word.size()] && s.substr(i-word.size(),word.size()) == word) ? 1 : dp[i];
+                }   
+            }
+        }
+
+        return dp[s.size()] ? true : false;
+    }
+};
+```
+
+
+
+
+
+
+

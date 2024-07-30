@@ -1597,3 +1597,191 @@ public:
 
 
 
+### 300. 最长递增子序列
+
+![image-20240723230822500](./assets/image-20240723230822500.png)
+
+这一题就体现了dp的另一种
+
+
+
+==之前的dp通常是dp迭代到最后一个，然后取dp[n]为结果==
+
+==现在，这里按照上面的思路是行不通的，此处我们应该选择在表中寻找我们需要的值==
+
+这个简单的思路转换使得我们不必拘泥于迭代将答案存到dp[n]（也就是设置dp[i]为到i位置的最长递增子序列，这个的状态转移无法定义）
+
+而是可以设置dp[i]为必须选取num[i]的最大递增子序列，这个设置让状态转移成为可能
+
+```c++
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        int n = (int)nums.size();
+        if (n == 0) {
+            return 0;
+        }
+        vector<int> dp(n, 0);
+        for (int i = 0; i < n; ++i) {
+            dp[i] = 1;
+            for (int j = 0; j < i; ++j) {
+                if (nums[j] < nums[i]) {
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        return *max_element(dp.begin(), dp.end());
+    }
+};
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 152. 乘积最大子数组
+
+![image-20240724194018198](./assets/image-20240724194018198.png)
+
+这一题乍一看，与最长递增子序列一致
+
+
+
+我们从头分析
+
+
+
+首先是最简单的设定，`dp[i]`为`nums[0:i]`中乘积最大的非空连续子函数，那么考虑状态转移，我们每插入一个`nums[i]`,可以发现，我们需要在整个`nums[0:i]`中找到一个组合，并且比`dp[0:i-1]`都要大，才能完成`dp[i]`的计算。造成这一困境的原因是因为我们设置的`dp[i]`本身并没有体现“连续子数组”的这一性质，导致我们每插入一个新的元素，无法利用已有的dp状态。
+
+因此，我们应该换一种思路，像“最长递增子序列”一样，**在dp表中隐含某些关系**
+
+
+
+与最长递增子序列不同，因为这里要求==非空连续的子数组==，因此如果我们设置`dp[i]`为==子数组以`nums[i]`为结尾的最大乘积==，那么我们只需要知道`dp[i-1]`的状态就一定能推导到`dp[i]`的状态
+$$
+dp[i] = std::max(dp[i-1] * nums[i],dp[i]);
+$$
+
+
+同时注意，每个dp位置实际上有两个选择，即为选择以`dp[i-1]`代表的子序列添加上`nums[i]`，和完全不采用之前的序列，仅包含自己（例如`[-1,100,-1]`。
+
+
+
+
+
+
+
+这样，你就能写出一个dp代码
+
+```c++
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+
+        // max multiply tailed by dp[i]
+        std::vector<double> dpmax(nums.size(),INT_MIN);
+        dpmax[0] = nums[0];
+
+        for(int i = 1; i< nums.size(); i++){
+            dpmax[i] = nums[i];
+
+            dpmax[i] = std::max(dpmax[i-1] * nums[i], dpmax[i]);
+
+        }
+        return (long long)*std::max_element(dpmax.begin(), dpmax.end());
+    }
+};
+```
+
+然后你发现，这个代码A不了，我们用一个例子来解释
+
+
+
+对于一个序列`[1,2,-3,1,-3]`
+
+你生成的dp表其实是`[1,2,-3, 1, -3]`
+
+最后找到最大值是2
+
+
+
+发现了吗，我们这种做法不满足无后效性，也就是实际上我们期待两个-3能够负负得正，但是dp表忽略了这一个信息。
+
+幸运的是，这个是有迹可循的，既然一个dpmax无法满足无后效性，而我们需要的是当前值要么直接就是越大越好，要么你就是小于0越小越好，期待之后能够有一个负数直接翻身，我们只需要再维护一个dpmin就可以了。
+
+
+
+```c++
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+
+        // max multiply tailed by dp[i]
+        std::vector<double> dpmax(nums.size(),INT_MIN);
+        std::vector<double> dpmin(nums.size(),INT_MAX);
+        dpmax[0] = nums[0];
+        dpmin[0] = nums[0];
+
+        for(int i = 1; i< nums.size(); i++){
+            dpmax[i] = nums[i];
+            dpmin[i] = nums[i];
+
+            dpmax[i] = std::max(dpmax[i-1] * nums[i], dpmax[i]);
+            dpmax[i] = std::max(dpmin[i-1] * nums[i], dpmax[i]);
+            dpmin[i] = std::min(dpmax[i-1] * nums[i], dpmin[i]);
+            dpmin[i] = std::min(dpmin[i-1] * nums[i], dpmin[i]);
+            /*
+            for(int j = i-1; j >= 0; j--){
+                dpmax[i] = std::max(dpmax[j] * scale, dpmax[i]);
+                dpmax[i] = std::max(dpmin[j] * scale, dpmax[i]);
+                dpmin[i] = std::min(dpmax[j] * scale, dpmin[i]);
+                dpmin[i] = std::min(dpmin[j] * scale, dpmin[i]);
+                scale *= nums[j];
+            }
+            */
+        }
+        return (long long)*std::max_element(dpmax.begin(), dpmax.end());
+    }
+};
+```
+
+可以进一步压缩dp空间
+
+```c++
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+
+        // max multiply tailed by dp[i]
+        double lastdpmax = nums[0];
+        double lastdpmin = nums[0];
+        double dpmax = lastdpmax;
+        for(int i = 1; i< nums.size(); i++){
+            double thisdpmax = nums[i];
+            double thisdpmin = nums[i];
+
+            thisdpmax = std::max(lastdpmax * nums[i], thisdpmax);
+            thisdpmax = std::max(lastdpmin * nums[i], thisdpmax);
+            thisdpmin = std::min(lastdpmax * nums[i], thisdpmin);
+            thisdpmin = std::min(lastdpmin * nums[i], thisdpmin);
+
+            if(dpmax < thisdpmax) dpmax = thisdpmax;
+
+            lastdpmax = thisdpmax;
+            lastdpmin = thisdpmin;
+        }
+        return (long long)dpmax;
+    }
+};
+```
+

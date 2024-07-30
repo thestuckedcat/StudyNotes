@@ -1,0 +1,161 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "Textsome/testsome.exe"
+		},
+		{
+			"path" : "Textsome/testsome.pdb"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"target_link_directories",
+			"target_link_libraries",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"Textsome/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 4,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 12,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 16,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 8,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 4,
+					"path" : "D:/Github-storage/StudyNotes/Cmake/cmake_4_1/Libsome"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "D:/Github-storage/StudyNotes/Cmake/cmake_4_1/external/glfw/include"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "MATHLIB::@b2d5b5b79192c60fa921"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "glfw::@ca12bac854c2ac6b2230"
+		}
+	],
+	"id" : "testsome::@11c09a67a5edf794dbd0",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-LD:\\Github-storage\\StudyNotes\\Cmake\\cmake_4_1\\Libsome\\build",
+				"role" : "libraryPath"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-LD:\\Github-storage\\StudyNotes\\Cmake\\cmake_4_1\\external\\glfw\\src",
+				"role" : "libraryPath"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "Libsome\\libMATHLIB.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "external\\glfw\\src\\libglfw3.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "testsome",
+	"nameOnDisk" : "testsome.exe",
+	"paths" : 
+	{
+		"build" : "Textsome",
+		"source" : "Textsome"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "Textsome/testadd.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "EXECUTABLE"
+}
